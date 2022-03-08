@@ -89,7 +89,7 @@
             text-align: center;
             margin: auto 5px auto 0px;
         }
-        #area{
+        #muse_area{
             width: 150px;
         }
         #selectBtn{
@@ -126,26 +126,22 @@
         }
     </style>
     <script>
-    function open_search(){
-        $('.searchBox').slideToggle();
-    }
     $(document).ready(function () {
-            listing();
-        });
-
-        function listing() {
-            $.ajax({
-                type: 'GET',
-                url: '/muse_info',
-                data: {},
-                success: function (response) {
-                    let rows = response['mnt'];
-                    for (let i = 0; i < rows.length; i++) {
-                        let muse_name = rows[i]['name']
-                        let muse_address = rows[i]['addr']
-                        let muse_type = rows[i]['type']
-                        let index = rows[i]['index']
-                        let temp_html = `<div class="col">
+        listing();
+    });
+    function listing() {
+        $.ajax({
+            type: 'GET',
+            url: '/muse_info',
+            data: {},
+            success: function (response) {
+                let rows = response['mnt'];
+                for (let i = 0; i < rows.length; i++) {
+                    let muse_name = rows[i]['name']
+                    let muse_address = rows[i]['addr']
+                    let muse_type = rows[i]['type']
+                    let index = rows[i]['index']
+                    let temp_html = `<div class="col">
                                             <div class="card">
                                                 <img src="" class="card-img-top" alt="...">
                                                 <div class="card-body">
@@ -154,16 +150,55 @@
                                                 </div>
                                             </div>
                                         </div>`
-                        $('#myCards').append(temp_html)
-                    }
+                    $('#myCards').append(temp_html)
                 }
-            })
-        }
+            }
+        })
+    }
+    function filtering(){
+        $('#myCards').empty()
+        let muse_builder = $('#muse_type').val()
+        let muse_type = $('#muse_art').val()
+        let muse_area = $('#muse_area').val()
+
+        $.ajax({
+            type: 'GET',
+            url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
+            data: {},
+            success: function (response) {
+            let rows = response['search_list']
+                for (let i = 0; i < rows.length; i++) {
+                    let muse_name = rows[i]['name']
+                    let muse_address = rows[i]['addr']
+                    let muse_type = rows[i]['type']
+                    let index = rows[i]['index']
+                    let temp_html = `<div class="col">
+                                         <div class="card">
+                                             <img src="" class="card-img-top" alt="...">
+                                             <div class="card-body">
+                                                 <a href="/index_sub?mnt_no=${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                 <p class="card-text">${muse_address}</p>
+                                             </div>
+                                         </div>
+                                    </div>`
+                    $('#myCards').append(temp_html)
+                }
+                console.log(rows)
+            }
+
+        })
+    }
+    function searching(){
+        $('#myCards').empty();
+        let search_txt = $('#searchText').val()
+    }
+    function open_search() {
+        $('.searchBox').slideToggle();
+    }
     </script>
 </head>
 <body>
     <div id="wrap">
-
         <div class="header">
             <h1><a href="index.html">MUMA</a></h1>
             <span class="headerBtn">
@@ -176,7 +211,7 @@
             <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
                 <input id="searchText" type="text" class="form-control" placeholder="검색어를 입력해주세요"
                        aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+                <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
             </div>
         </div>
         <div class="titleBox">
@@ -184,19 +219,19 @@
             <p class="myDetail">박물관 마스터들(MUseum MAsters)을 위한 박물관 정보를 공유합니다. </p>
         </div>
         <div class="mySelector">
-            <select class="form-select" aria-label="Default select example">
-                <option selected>국공립/사립/대학(전체)</option>
+            <select id="muse_type" class="form-select" aria-label="Default select example">
+                <option value="타입전체" selected>국공립/사립/대학(전체)</option>
                 <option value="국공립">국공립</option>
                 <option value="사립">사립</option>
                 <option value="대학">대학</option>
             </select>
-            <select class="form-select" id="museumType" aria-label="Default select example">
-                <option selected>미술관/박물관(전체)</option>
+            <select class="form-select" id="muse_art" aria-label="Default select example">
+                <option value="박물관전체" selected>미술관/박물관(전체)</option>
                 <option value="미술관">미술관</option>
                 <option value="박물관">박물관</option>
             </select>
-            <select class="form-select" id="area" aria-label="Example select with button addon">
-                <option selected>지역(전체)</option>
+            <select class="form-select" id="muse_area" aria-label="Example select with button addon">
+                <option value="지역전체" selected>지역(전체)</option>
                 <option value="서울">서울특별시</option>
                 <option value="부산">부산광역시</option>
                 <option value="대구">대구광역시</option>
@@ -214,7 +249,7 @@
                 <option value="경상남도">경상남도</option>
                 <option value="제주도">제주특별자치도</option>
             </select>
-            <button id="selectBtn" type="button" class="btn btn-outline-dark">검색</button>
+            <button onclick="filtering()" id="selectBtn" type="button" class="btn btn-outline-dark">검색</button>
         </div>
         <div class="cardBox">
             <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
