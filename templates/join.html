@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <style>
+        .header{
+            width: 100%;
+            height: 50px;
+            background-color: green;
+        }
+        .container{
+            width: 600px;
+            border-radius: 10px;
+            border: 1px solid grey;
+            padding: 30px;
+        }
+
+    </style>
+    <script>
+        function confirm(){
+
+            let id = $('#id').val()
+            let email = $('#email').val()
+            let pw = $('#user_pw').val()
+            let pw_confirm = $('#confirm_pw').val()
+            let nickname = $('#nickname').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/api/join",
+                data: { id_give:id,
+                        email_give:email,
+                        pw_give:pw,
+                        pw_conf_give:pw_confirm,
+                        nickname_give:nickname },
+                success: function(response){
+                    alert(response['msg'])
+                    console.log(response)
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div class="header">
+
+</div>
+
+<div class="container mt-5">
+    <p class="h2 mb-3 fw-bold" style="text-align: center">회원가입</p>
+    <div class="row">
+        <div class="col">
+            <label for="id" class="form-label fw-bold">아이디</label>
+            <input type="text" id="id" class="form-control" placeholder="아이디 입력" aria-label="First name">
+            <p class="help-block fst-italic fw-light" style="color: grey">로그인에 사용할 이메일 입력</p>
+        </div>
+        <div class="col">
+            <label for="email" class="form-label fw-bold">이메일</label>
+            <div class="input-group mb-3">
+                <select class="form-select" id="email" aria-label="Example select with button addon">
+                    <option selected value="0">이메일 선택</option>
+                    <option value="@naver.com">@naver.com</option>
+                    <option value="@naver.com">@naver.com</option>
+                    <option value="@naver.com">@naver.com</option>
+                </select>
+                <button class="btn btn-outline-secondary" type="button">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <label for="nickname" class="form-label fw-bold">닉네임</label>
+            <div class="input-group mb-3">
+                <input id="nickname" type="text" class="form-control" placeholder="특수문자 불가, 8자 이내" >
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2">확인</button>
+            </div>
+        </div>
+        <div class="col"></div> <!--유효성 검사-->
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="user_pw" class="form-label fw-bold">비밀번호</label>
+            <div class="input-group mb-3">
+                <input id="user_pw" type="password" class="form-control" placeholder="특수문자 포함, 8~12자" >
+            </div>
+        </div>
+        <div class="col"></div> <!--유효성 검사-->
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="confirm_pw" class="form-label fw-bold">비밀번호 확인</label>
+            <div class="input-group mb-3">
+                <input id="confirm_pw" type="password" class="form-control" placeholder="특수문자 포함, 8~12자" >
+            </div>
+        </div>
+        <div class="col"></div> <!--유효성 검사-->
+    </div>
+    <div style="text-align: center">
+        <button type="button" class="btn btn-primary mt-3 col-6" onclick="confirm()">회원가입</button>
+    </div>
+</div>
+
+
+</body>
+</html>
