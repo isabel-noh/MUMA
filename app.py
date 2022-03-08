@@ -15,13 +15,13 @@ def home():
 def mnt_select():
     doc = []  # 검색을 마친 자료가 들어갈 배열입니다.
     area_receive = request.args.get("area_give")
-    museums = list(db.muse_info.find({}, {'_id': False}))  # 산의 전체 목록을 mountains 변수로 받아옵니다.
+    museums = list(db.muse_info.find({}, {'_id': False}))  
     for museum in museums:
-        if area_receive in museums['addr']:  # 산의 세부 설명에서 mnt_receive로 받은 검색어를 찾아봅니다.
-            doc.append(museum)  # 일치하는 명산의 번호를 doc 배열에 집어넣습니다.
+        if area_receive in museums['addr']:  
+            doc.append(museum)  
     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
-# index_sub로 연결하면서 mnt_no 데이터를 전송
+# detailpg.html로 연결하면서 mnt_no 데이터를 전송
 @app.route('/detail_pg', methods=['GET'])
 def detail_pg():
     index = request.args.get('index')
