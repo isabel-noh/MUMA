@@ -133,7 +133,7 @@
                     <option value="@nate.com">@nate.com</option>
                     <option value="@gmail.com">@gmail.com</option>
                 </select>
-                <button id="check_email" onclick="check_email()" class="btn btn-outline-secondary" type="button">확인</button>
+                <button id="check_email" onclick="check_email()" class="btn btn-outline-secondary" disabled="disabled" type="button">확인</button>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
             else {
                 temp_html=`<p class="text-danger fst-italic">영문 소문자 및 숫자, 5~20자</p>`
                 let btn = document.getElementById('check_email')
-                btn.disabled = true
+                btn.disabled = false
             }
             $('#valid_email').empty()
             $('#valid_email').append(temp_html)
