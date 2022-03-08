@@ -14,12 +14,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
-    <!--google font-->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+
+
     <title>MUMA(MUseum Masters)</title>
     <style>
-        /**{*/
-        /*    font-family: ;*/
-        /*}*/
+        *{
+            font-family: 'Noto Sans KR', sans-serif;
+        }
         .header{
             width: 100%;
             height: 60px;
@@ -27,6 +29,11 @@
         h1{
             display: inline;
             margin: 20px 0 0 20px;
+            color: darkgrey;
+        }
+        a{
+            text-decoration: none;
+            color: #333333;
         }
         .headerBtn{
             float: right;
@@ -77,13 +84,13 @@
             justify-content: center;
         }
         .mySelector > select{
-            width: 150px;
+            width: 200px;
             display: inline-block;
             text-align: center;
             margin: auto 5px auto 0px;
         }
-        #museumType{
-            width: 200px;
+        #area{
+            width: 150px;
         }
         #selectBtn{
             margin: auto 0px auto 10px;
@@ -97,21 +104,72 @@
             object-fit: cover; /*이미지를 너비 혹은 높이에 맞게 확대하면서 img 창을 꽉 채움(background-size:cover와 비슷)*/
             object-position: center;
         }
+        /*footer*/
+        footer {
+            max-width: 1500px;
+            width: 95%;
+            height: 150px;
+            position: relative;
+            padding: 10px 0px 20px 50px;
+            margin-bottom: 20px;
+        }
+        .footer-title {
+            font-size: 150%;
+            color: grey;
+        }
+        .footer-detail {
+            color: darkgrey;
+        }
+        .footer-member{
+            color: grey;
+            font-size: 0.8em;
+        }
     </style>
     <script>
     function open_search(){
         $('.searchBox').slideToggle();
     }
+    $(document).ready(function () {
+            listing();
+        });
+
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/muse_info',
+                data: {},
+                success: function (response) {
+                    let rows = response['mnt'];
+                    for (let i = 0; i < rows.length; i++) {
+                        let muse_name = rows[i]['name']
+                        let muse_address = rows[i]['addr']
+                        let muse_type = rows[i]['type']
+                        let index = rows[i]['index']
+                        let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/index_sub?mnt_no=${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        $('#myCards').append(temp_html)
+                    }
+                }
+            })
+        }
     </script>
 </head>
 <body>
     <div id="wrap">
+
         <div class="header">
             <h1><a href="index.html">MUMA</a></h1>
             <span class="headerBtn">
                 <button onclick="open_search()"><img src="https://img.icons8.com/ios-glyphs/30/000000/search--v1.png"/></button>
                 <a href="login.html"><button type="button" class="btn btn-light">Login</button></a>
-                <a href="signIn.html"><button type="button" class="btn btn-outline-dark">Sign-Up</button></a>
+                <a href="join.html"><button type="button" class="btn btn-outline-dark">Sign-Up</button></a>
             </span>
         </div>
         <div class="searchBox">
@@ -127,9 +185,10 @@
         </div>
         <div class="mySelector">
             <select class="form-select" aria-label="Default select example">
-                <option selected>국립/사립(전체)</option>
-                <option value="국립">국립</option>
+                <option selected>국공립/사립/대학(전체)</option>
+                <option value="국공립">국공립</option>
                 <option value="사립">사립</option>
+                <option value="대학">대학</option>
             </select>
             <select class="form-select" id="museumType" aria-label="Default select example">
                 <option selected>미술관/박물관(전체)</option>
@@ -159,46 +218,25 @@
         </div>
         <div class="cardBox">
             <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
-                <div class="col">
-                    <div class="card">
-                        <img src="https://d3kxs6kpbh59hp.cloudfront.net/community/COMMUNITY/ae34b681cd4a4befbd9263da4c6f565d/ee173cf4bfe74bc6b4461af182b14b2f_1559705878.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Museum Name</h5>
-                            <p class="card-text">Museum Address</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="https://d3kxs6kpbh59hp.cloudfront.net/community/COMMUNITY/ae34b681cd4a4befbd9263da4c6f565d/ee173cf4bfe74bc6b4461af182b14b2f_1559705878.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Museum Name</h5>
-                            <p class="card-text">Museum Address</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="https://d3kxs6kpbh59hp.cloudfront.net/community/COMMUNITY/ae34b681cd4a4befbd9263da4c6f565d/ee173cf4bfe74bc6b4461af182b14b2f_1559705878.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Museum Name</h5>
-                            <p class="card-text">Museum Address</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="https://d3kxs6kpbh59hp.cloudfront.net/community/COMMUNITY/ae34b681cd4a4befbd9263da4c6f565d/ee173cf4bfe74bc6b4461af182b14b2f_1559705878.jpg" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">Museum Name</h5>
-                            <p class="card-text">Museum Address</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
-
+        <!--footer-->
+        <footer class="footer">
+            <div>
+                <hr>
+                <p class="footer-title">
+                    MUMA
+                </p>
+                <p class="footer-detail">
+                    Designed by 항해99 6기 8조
+                </p>
+                <p class="footer-member">
+                    김재중 노현정 박예슬 황석준
+                </p>
+            </div>
+        </footer>
 
 
     </div>
