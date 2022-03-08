@@ -24,6 +24,61 @@
 
     </style>
     <script>
+        var check_one = false
+        var check_two = false // 이메일과 닉네임의 중복 검사가 진행되었는지 확인하기 위해서 필요한 변수입니다. false로 초기화 시켜 둡니다.
+
+        function ctr_cnf_btn(){ // 회원가입 버튼을 활성화 시키는 메소드입니다.
+            if (check_one == true && check_two == true){
+                let btn = document.getElementById('comfirm_btn')
+                btn.disabled = false
+            }
+        }
+
+        function check_email(){
+
+            let id = $('#id').val()
+            let email = $('#email').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/api/join/check_email",
+                data: { id_give:id, email_give:email},
+                success: function(response){
+                    alert(response['msg'])
+                    if (response['result'] == 'success'){
+                        let id = document.getElementById('id')
+                        let selector = document.getElementById('email')
+                        let btn = document.getElementById('check_email')
+                        id.disabled = true
+                        selector.disabled = true
+                        btn.disabled = true
+                        check_one = true
+                        ctr_cnf_btn()
+                    }
+                }
+            })
+        }
+        function check_nick(){
+
+            let nickname = $('#nickname').val()
+
+            $.ajax({
+                type: "POST",
+                url: "/api/join/check_nick",
+                data: { nickname_give: nickname },
+                success: function(response){
+                    alert(response['msg'])
+                    if (response['result'] == 'success'){
+                        let nick = document.getElementById('nickname')
+                        let btn = document.getElementById('check_nick')
+                        nick.disabled = true
+                        btn.disabled = true
+                        check_two = true
+                        ctr_cnf_btn()
+                    }
+                }
+            })
+        }
         function confirm(){
 
             let id = $('#id').val()
@@ -42,7 +97,9 @@
                         nickname_give:nickname },
                 success: function(response){
                     alert(response['msg'])
-                    console.log(response)
+                    if (response['result'] == 'success'){
+                        location.href="/"
+                    }
                 }
             })
         }
@@ -58,19 +115,20 @@
     <div class="row">
         <div class="col">
             <label for="id" class="form-label fw-bold">아이디</label>
-            <input type="text" id="id" class="form-control" placeholder="아이디 입력" aria-label="First name">
+            <input type="text" id="id" class="form-control" placeholder="아이디 입력">
             <p class="help-block fst-italic fw-light" style="color: grey">로그인에 사용할 이메일 입력</p>
         </div>
         <div class="col">
             <label for="email" class="form-label fw-bold">이메일</label>
             <div class="input-group mb-3">
-                <select class="form-select" id="email" aria-label="Example select with button addon">
+                <select class="form-select" id="email">
                     <option selected value="0">이메일 선택</option>
                     <option value="@naver.com">@naver.com</option>
-                    <option value="@naver.com">@naver.com</option>
-                    <option value="@naver.com">@naver.com</option>
+                    <option value="@daum.com">@daum.com</option>
+                    <option value="@nate.com">@nate.com</option>
+                    <option value="@gmail.com">@gmail.com</option>
                 </select>
-                <button class="btn btn-outline-secondary" type="button">확인</button>
+                <button id="check_email" onclick="check_email()" class="btn btn-outline-secondary" type="button">확인</button>
             </div>
         </div>
     </div>
@@ -80,7 +138,7 @@
             <label for="nickname" class="form-label fw-bold">닉네임</label>
             <div class="input-group mb-3">
                 <input id="nickname" type="text" class="form-control" placeholder="특수문자 불가, 8자 이내" >
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">확인</button>
+                <button id="check_nick" onclick="check_nick()" class="btn btn-outline-secondary" type="button">확인</button>
             </div>
         </div>
         <div class="col"></div> <!--유효성 검사-->
@@ -104,7 +162,7 @@
         <div class="col"></div> <!--유효성 검사-->
     </div>
     <div style="text-align: center">
-        <button type="button" class="btn btn-primary mt-3 col-6" onclick="confirm()">회원가입</button>
+        <button id="comfirm_btn" disabled="disabled" type="button" class="btn btn-primary mt-3 col-6" onclick="confirm()">회원가입</button>
     </div>
 </div>
 
