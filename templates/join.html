@@ -188,16 +188,20 @@
                     btn.disabled = true
                 }
                 else{
-                    temp_html=`<p class="help-block text-success fst-italic">중복을 체크해주세요</p>`
+                    temp_html=`<p class="help-block text-success fst-italic">확인버튼으로 중복체크</p>`
                     let btn = document.getElementById('check_email')
                     btn.disabled = false
                 }
             }
-            else if ( id == ''){ temp_html = `<p class="help-block fst-italic fw-light" style="color: grey">로그인에 사용할 이메일 입력</p>`}
+            else if ( id == ''){
+                temp_html = `<p class="help-block fst-italic fw-light" style="color: grey">로그인에 사용할 이메일 입력</p>`
+                let btn = document.getElementById('check_email')
+                btn.disabled = true
+            }
             else {
                 temp_html=`<p class="text-danger fst-italic">영문 소문자 및 숫자, 5~20자</p>`
                 let btn = document.getElementById('check_email')
-                btn.disabled = false
+                btn.disabled = true
             }
             $('#valid_email').empty()
             $('#valid_email').append(temp_html)
@@ -218,12 +222,15 @@
                 }
                 else{
                     temp_html=`<label for="nick"></label>
-                           <p id="nick" class="text-success fst-italic mt-3">중복을 체크해주세요</p>`
+                           <p id="nick" class="text-success fst-italic mt-3">확인버튼으로 중복체크</p>`
                     let btn = document.getElementById('check_nick')
                     btn.disabled = false
                 }
             }
-            else if ( nick == ''){ temp_html = ``}
+            else if ( nick == ''){ temp_html = ``
+                let btn = document.getElementById('check_nick')
+                btn.disabled = true
+            }
             else {
                 temp_html=`<label for="nick"></label>
                            <p id="nick" class="text-danger fst-italic mt-3">특수문자 불가, 2~8자</p>`
