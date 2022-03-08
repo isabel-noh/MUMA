@@ -3,7 +3,7 @@ app = Flask(__name__)
 import certifi
 from pymongo import MongoClient
 
-client = MongoClient('mongodb+srv://id:passwor@cluster0.0vjef.mongodb.net/Cluster0?retryWrites=true&w=majority',tlsCAFile=certifi.where())
+client = MongoClient('mongodb+srv://id:password@cluster0.0vjef.mongodb.net/Cluster0?retryWrites=true&w=majority',tlsCAFile=certifi.where())
 db = client.dbsparta
 
 @app.route('/')
@@ -14,15 +14,26 @@ def home():
 @app.route("/muse_select", methods=["GET"])
 def mnt_select():
     doc = []  # 검색을 마친 자료가 들어갈 배열입니다.
+    builder_receive = request.args.get("builder_give")
+    type_receive = request.args.get("type_give")
     area_receive = request.args.get("area_give")
-    museums = list(db.muse_info.find({}, {'_id': False}))  
-    for museum in museums:
-        if area_receive in museums['addr']:  
-            doc.append(museum)  
+
+    museums = list(db.muse_info.find({}, {'_id': False}))  # 박물관의 전체 목록을 museums 변수로 받아옵니다.
+    if builder_receive == '국공립':
+        for museum in museums:
+            if museum["type"] == '국립' or museum["type"] =='공립':
+    elif builder_receive == '타입전체':
+        for museum in museums:
+            doc.append(museum)
+    else:
+        for museum in museums:
+            if builder_receive in museum["type"]:
+                doc.append(museum)
+
     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
-# detailpg.html로 연결하면서 mnt_no 데이터를 전송
-@app.route('/detail_pg', methods=['GET'])
+# detailpg.html로 연결하면서 index 데이터를 전송
+@app.route('/detail_pg', methods=["GET"])
 def detail_pg():
     index = request.args.get('index')
     return render_template('detailpg.html', index = index)
