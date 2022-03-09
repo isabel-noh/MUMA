@@ -139,11 +139,12 @@
     <script>
     $(document).ready(function () {
         listing();
-        chk_token() // 홈페이지가 렌더링됨과 동시에 새로 발급받은 토큰 데이터를
+        chk_token() // 홈페이지가 렌더링됨과 동시에 새로 발급받은 토큰 데이터를 불러옵니다.
     });
     function chk_token(){
-        let token = '{{acc_token}}'
-        $.cookie('acc_token', token, {path: '/'})
+            let token = '{{acc_token}}'
+            if (token == ''){ } // 토큰의 데이터가 없다면 토큰을 만들지 않습니다.
+            else{$.cookie('acc_token', token, {path: '/'})} // ref_token이 있어서 새 토큰을 발급받은 경우는 토큰을 만들어 줍니다.
     }
     function listing() {
         $.ajax({

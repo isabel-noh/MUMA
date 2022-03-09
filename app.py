@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify
 import hashlib
 from pymongo import MongoClient
 import config # config는 로컬 환경에서는 사용되지 않으므로 지워주셔도 괜찮습니다.
@@ -9,13 +9,16 @@ import requests
 from datetime import datetime, timedelta
 
 ####### 주의!!! #######
-#사용한 라이브러리는 flask, pymongo, flask-jwtlogin, DateTime, requests 입니다. 설치하시고 실행해 주세요.
+#사용한 라이브러리는 flask, pymongo, dnspython, requests 입니다. 설치하시고 실행해 주세요.
+#확인결과, 서버에서는 jwt 암호화를 해준 함수들을 UTF-8로 복호화 시켜줘야 작동하는데, 로컬에서는 이상하게도 복호화 시켜주지 않아야 잘 작동합니다.
+#따라서, 제가 서버에 올리는 app.py와 로컬에서 돌리는 app.py가 조금 다르다는 것을 참조해 주셨으면 합니다.
+######################
 
 app = Flask(__name__)
 client = MongoClient(config.mongoDB) # 각자의 몽고DB와 연동해 주세요.
 db = client.dbsparta
 SECRET_KEY = config.secret_key # config 처리 해줘야 합니다. 깃허브에서는 숨겨둡니다.
-KEY_SECRET = config.key_secret # 저는 리프레시 토큰과 액세스 토큰의 암호화 코드를 각각 달리 지정해 줬습니다. 사용하시려면 아무 문자열이나 입력해주세요.
+KEY_SECRET = config.key_secret # 저는 리프레시 토큰과 액세스 토큰의 암호화 코드를 각각 달리 지정해 줬습니다. 사용하시려면 두 암호에 아무 문자열이나 입력해주세요.
 
 @app.route('/')
 def main():
@@ -29,8 +32,8 @@ def main():
         try:
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except: # ref_token이 발급되지 않은 상태라면 로그인 되지 않은 화면으로 렌더링합니다.
             return render_template('index.html', head=renderTag.cur_st_logout)
@@ -39,7 +42,7 @@ def main():
         try: # 마찬가지로 똑같은 절차를 밟습니다.
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
             acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:  # ref_token이 발급되지 않은 상태라면 로그인 되지 않은 화면으로 렌더링합니다.
@@ -57,8 +60,8 @@ def login():
         try:
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:  # ref_token이 발급되지 않은 상태라면 로그인 페이지로 렌더링합니다.
             return render_template('login.html')
@@ -67,8 +70,8 @@ def login():
         try:  # 마찬가지로 똑같은 절차를 밟습니다.
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:  # ref_token이 발급되지 않은 상태라면 로그인 페이지로 렌더링합니다.
             return render_template('login.html')
@@ -85,8 +88,8 @@ def join():
         try:
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:
             return render_template('join.html')
@@ -96,8 +99,8 @@ def join():
         try:  # 마찬가지로 똑같은 절차를 밟습니다.
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
-            payload['exp'] = datetime.utcnow() + timedelta(seconds=10)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:  # ref_token이 발급되지 않은 상태라면 회원가입 페이지로 렌더링합니다.
             return render_template('join.html')
@@ -199,7 +202,7 @@ def show_muse():
     muse_data = db.muse_info.find_one({'index':int(num_receive)},{'_id':False})
     return jsonify({'muse_data': muse_data})
 
-@app.route('/api/join', methods=['POST']) # 회원가입 기능입니다. 시간이 남는다면 서버에서 2차 유효성검사를 실시합니다.
+@app.route('/api/join', methods=['POST']) # 회원가입 기능입니다. 시간이 남는다면 서버에서 2차 유효성검사를 실시해 보겠습니다.
 def api_join():
     id_receive = request.form['id_give']
     email_receive = request.form['email_give']
@@ -207,7 +210,7 @@ def api_join():
     nickname_receive = request.form['nickname_give']
 
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
-    db.regi_test.insert_one({ 'email': id_receive + email_receive, 'pw': pw_hash, 'nick': nickname_receive})
+    db.register.insert_one({ 'email': id_receive + email_receive, 'pw': pw_hash, 'nick': nickname_receive})
 
     return jsonify({'result': 'success', 'msg': '회원가입 완료!'})
 
@@ -217,7 +220,7 @@ def api_checkEmail():
     email_receive = request.form['email_give']
     email_addr = id_receive + email_receive
 
-    regi = db.regi_test.find_one({'email': email_addr})
+    regi = db.register.find_one({'email': email_addr})
 
     if regi == None:
         return jsonify({'result': 'success', 'msg': '사용 가능한 이메일입니다.'})
@@ -228,7 +231,7 @@ def api_checkEmail():
 def api_checkNick():
     nick_receive = request.form['nickname_give']
 
-    regi = db.regi_test.find_one({'nick': nick_receive})
+    regi = db.register.find_one({'nick': nick_receive})
 
     if regi is None:
         return jsonify({'result': 'success', 'msg': '사용 가능한 닉네임입니다.'})
@@ -242,13 +245,13 @@ def api_login():
     pw_receive = request.form['pw_give']
     keep_receive = request.form['chk_keep']
     pw_hash = hashlib.sha256(pw_receive.encode('utf-8')).hexdigest()
-    result = db.regi_test.find_one({'email': email_receive, 'pw': pw_hash})
+    result = db.register.find_one({'email': email_receive, 'pw': pw_hash})
 
     if result is not None:
         if keep_receive == 'true':
             payload = {
              'id': email_receive,
-             'exp': datetime.utcnow() + timedelta(seconds=5)  # 로그인 1분 유지
+             'exp': datetime.utcnow() + timedelta(seconds=60 * 15) # 로그인 15분 유지
             }
             acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             payload = {
@@ -263,11 +266,12 @@ def api_login():
                 'exp': datetime.utcnow() + timedelta(seconds=60 * 60 * 4)  # 로그인 4시간 유지
             }
             acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+            print(acc_token)
             return jsonify({'result': 'success', 'acc_token': acc_token})
 
     # 찾지 못하면
     else:
-        return jsonify({'result': 'fail', 'msg': '아이디와 비밀번호가 일치하지 않습니다.'})
+        return jsonify({'result': 'fail', 'msg': '아이디와 비밀번호를 확인해주세요.'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)

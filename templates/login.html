@@ -119,39 +119,57 @@
         }
     </style>
     <script>
-    function open_search(){
-        $('.searchBox').slideToggle();
-    }
-
-    function login() {
-        let id = $('#id').val()
-        let pw = $('#pw').val()
-        let chk_save = false
-        let chk_keep = false
-        if ($('#flexCheckSaveId').is(":checked")) { chk_save = true } // 로그인 유지 기능도 곧 구현해 보겠습니다.
-        if ($('#flexCheckDKeepLogin').is(":checked")) { chk_keep = true } // 체크박스의 값을 boolean으로 받아옵니다.
-
-        $.ajax({
-            type: "POST",
-            url: "/api/login",
-            data: { email_give: id, pw_give: pw, chk_keep: chk_keep }, // 받은 자료를 백엔드로 보냅니다.
-            success: function (response) {
-                if (response['result'] == 'success') { // 성공적으로 받아왔을 시
-                    console.log(response)
-                    if (chk_keep){
-                        $.cookie('ref_token', response['ref_token'], {expires:7 ,path: '/'}) //7일 후 만료되는 REFRESH TOKEN 쿠키 생성
-                        $.cookie('acc_token', response['acc_token'], {path: '/'}) //브라우저를 닫거나 15분후 만료되는 ACCESS TOKEN 쿠키 생성
-                    }
-                    else { $.cookie('acc_token', response['acc_token'], {path: '/'}) } // 그렇지 않은 경우, 일반 ACCESS TOKEN 쿠키를 생성합니다. 4시간이 지나거나 브라우저를 닫으면 소멸합니다.
-                    alert('로그인 완료!')
-                    window.location.href = '/'
-                } else {
-                    // 로그인이 안되면 에러메시지를 띄웁니다.
-                    alert(response['msg'])
-                }
-            }
+        $(document).ready(function () {
+            chk_saveID()
         })
-    }
+
+        function chk_saveID(){ // 쿠키를 받아와 아이디 인풋창을 초기화시켜주고, 아이디 저장 박스를 체크해 줍니다.
+            if ($.cookie('save_id') != null){
+                $('#id').val($.cookie('save_id'))
+                $("input:checkbox[id='flexCheckSaveId']").prop("checked", true)
+            }
+        }
+
+        function open_search(){
+            $('.searchBox').slideToggle();
+        }
+
+        function login() {
+            let id = $('#id').val()
+            let pw = $('#pw').val()
+            let chk_save = false
+            let chk_keep = false
+            if ($('#flexCheckSaveId').is(":checked")) { chk_save = true } // 로그인 유지 기능을 구현하기 위해 필요합니다.
+            if ($('#flexCheckDKeepLogin').is(":checked")) { chk_keep = true } // 체크박스의 값을 boolean으로 받아옵니다.
+
+            $.ajax({
+                type: "POST",
+                url: "/api/login",
+                data: { email_give: id, pw_give: pw, chk_keep: chk_keep }, // 받은 자료를 백엔드로 보냅니다.
+                success: function (response) {
+                    if (response['result'] == 'success') { // 성공적으로 받아왔을 시
+                        if (chk_save){$.cookie('save_id', id, {expires:30 ,path: '/'})} // 아이디 체크시에 쿠키에 아이디를 30일간 보관합니다.
+                        if (chk_keep){
+                            $.cookie('ref_token', response['ref_token'], {expires:7 ,path: '/'}) //7일 후 만료되는 REFRESH TOKEN 쿠키 생성
+                            $.cookie('acc_token', response['acc_token'], {path: '/'}) //브라우저를 닫거나 15분후 만료되는 ACCESS TOKEN 쿠키 생성
+                        }
+                        else { $.cookie('acc_token', response['acc_token'], {path: '/'}) } // 로그인 유지를 선택하지 않았으면 일반 ACCESS TOKEN 쿠키를 생성합니다. 4시간이 지나거나 브라우저를 닫으면 소멸합니다.
+                        alert('로그인 완료!')
+                        console.log(response)
+                        window.location.href = '/'
+                    } else {
+                        // 로그인이 안되면 에러메시지를 띄웁니다.
+                        alert(response['msg'])
+                    }
+                }
+            })
+        }
+        function enter_input() {
+            if (window.event.keyCode == 13) {
+                login()
+            }
+        }
+
     </script>
 </head>
 <body>
@@ -175,12 +193,14 @@
             <div class="logInTxt"><h3>로 그 인</h3></div>
             <div class="logInInput">
                 <div class="logInInputBox">
-                    <div class="idInput">
-                        <form>아이디 <input style="margin-left: 13px" type="email" id="id" placeholder="이메일을 입력해주세요"></form>
-                    </div>
-                    <div class="pwInput">
-                        <form>비밀번호 <input type="password" id="pw"></form>
-                    </div>
+                    <form onkeyup="enter_input()">
+                        <div class="idInput">
+                            이메일 <input style="margin-left: 13px" type="email" id="id" placeholder="이메일을 입력해주세요">
+                        </div>
+                        <div class="pwInput">
+                            비밀번호 <input type="password" id="pw">
+                        </div>
+                    </form>
                     <div class="saveId">
                         <div id="saveId" class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckSaveId">
@@ -201,9 +221,8 @@
                     <button type="button" class="btn btn-outline-primary" onclick="login()">로 그 인</button>
                 </div>
             </div>
-
         </div>
-        <div class="signIn"><p>아직 회원이 아니세요? <button style="margin-left: 30px" type="button" class="btn btn-outline-dark">Sign in</button></p></div>
+        <div class="signIn"><p>아직 회원이 아니세요? <a href='/join'><button style="margin-left: 30px" type="button" class="btn btn-outline-dark">Sign in</button></a></p></div>
         <!--footer-->
         <footer class="footer">
             <div>
