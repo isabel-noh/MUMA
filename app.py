@@ -74,11 +74,29 @@ def mnt_select():
 
     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
-# detailpg.html로 연결하면서 index 데이터를 전송
-@app.route('/detail_pg', methods=["GET"])
-def detail_pg():
-    index = request.args.get('index')
-    return render_template('detailpg.html', index=index)
+# detailpg.html로 연결하면서 해당박물관 데이터를 전송
+@app.route('/detail/mm_no/<index>')
+def detail(index):
+    index = int(index)
+    museum = db.muse_info.find_one({'index': index})
+
+    # 지도 주소 위도, 경도로 변환 : x, y 값
+    headers = {
+        "X-NCP-APIGW-API-KEY-ID": "afrl6tl1y2",
+        "X-NCP-APIGW-API-KEY": "CwhCBEw4LafFurJ2juls3RMtmVy8yYmkXS4fMNTV"
+    }
+    r = requests.get(f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={museum['addr']}", headers=headers)
+    response = r.json()
+    # 지도 주소 정보를 찾을 수 없을때 예외 처리
+    if response["status"] == "OK":
+        if len(response["addresses"]) > 0:
+            x = float(response["addresses"][0]["x"])
+            y = float(response["addresses"][0]["y"])
+            print(museum["addr"], x, y)
+        else:
+            print(title, "좌표를 찾지 못했습니다")
+
+    return render_template('detail.html', museum = museum, addr_x = x, addr_y = y)
 
 @app.route("/muse_info", methods=["GET"])
 def muse_get():
