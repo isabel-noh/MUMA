@@ -61,6 +61,17 @@ def mnt_select():
 
     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
+   # 검색 기능
+@app.route("/muse_search", methods=["GET"])
+def muse_search():
+    doc = []
+    text_receive = request.args.get("text_give")
+    museums = list(db.muse_info.find({}, {'_id': False}))
+    for museum in museums:
+        if text_receive in museum['name']:
+            doc.append(museum)
+    return jsonify({'search_list' : doc, 'msg': '검색 완료!'})
+
 # detailpg.html로 연결하면서 index 데이터를 전송
 @app.route('/detail_pg', methods=["GET"])
 def detail_pg():
@@ -79,4 +90,4 @@ def show_muse():
     return jsonify({'muse_data': muse_data})
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5001, debug=True)
+    app.run('0.0.0.0', port=5000, debug=True)
