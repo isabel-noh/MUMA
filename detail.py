@@ -15,12 +15,11 @@ def main():
 
 
 #detailpg.html로 연결하면서 mnt_no 데이터를 전송
-@app.route('/detail', methods=['GET'])
-def detail():
-    # index = 5 # 테스트
-    index = request.args.get('index')
+@app.route('/detail/mm_no/<index>')
+def detail(index):
+    index = int(index)
     museum = db.muse_info.find_one({'index': index})
-    return render_template('detail.html', museum = museum, index= index) #index 없애도 ...되려나..?
+    return render_template('detail.html', museum = museum)
 
 
 
