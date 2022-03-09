@@ -9,7 +9,7 @@ client = MongoClient(config.mongoDB)
 db = client.dbsparta
 
 @app.route('/join') # html join으로 통일 변경
-def register():
+def join():
     return render_template('join.html')
 
 @app.route('/api/join', methods=['POST'])
