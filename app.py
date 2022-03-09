@@ -64,7 +64,7 @@ def muse_select():
 
     # 검색 기능
 @app.route("/muse_search", methods=["GET"])
-def muse_search():
+def muse_filter():
     doc = []
     text_receive = request.args.get("text_give")
     museums = list(db.muse_info.find({}, {'_id': False}))
@@ -72,8 +72,6 @@ def muse_search():
         if text_receive in museum['name']:
             doc.append(museum)
     return jsonify({'search_list' : doc, 'msg': '검색 완료!'})
-
-
     # detailpg.html로 연결하면서 index 데이터를 전송
     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
