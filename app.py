@@ -3,10 +3,7 @@ app = Flask(__name__)
 import certifi
 from pymongo import MongoClient
 
-client = MongoClient('mongodb+srv://isabel_noh:sparta@cluster0.0vjef.mongodb.net/Cluster0?retryWrites=true&w=majority',tlsCAFile=certifi.where())
-
 client = MongoClient('mongodb+srv://id:password@cluster0.0vjef.mongodb.net/Cluster0?retryWrites=true&w=majority',tlsCAFile=certifi.where())
-
 db = client.dbsparta
 
 #HTML을 주는 부분
