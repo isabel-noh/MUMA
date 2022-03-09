@@ -218,6 +218,12 @@ function filtering(){
     function open_search() {
         $('.searchBox').slideToggle();
     }
+    function enter_search(event) {
+        let key = event.key;
+        if (key == 'Enter') {
+            searching();
+        }
+    }
     </script>
 </head>
 <body>
@@ -232,7 +238,7 @@ function filtering(){
         </div>
         <div class="searchBox">
             <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
-                <input id="searchText" type="text" class="form-control" placeholder="검색어를 입력해주세요"
+                <input id="searchText" onkeyup="enter_search(event)" type="text" class="form-control" placeholder="검색어를 입력해주세요"
                        aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
                 <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
             </div>
