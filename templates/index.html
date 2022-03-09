@@ -124,6 +124,16 @@
             color: grey;
             font-size: 0.8em;
         }
+        a#topBtn {
+            position: fixed; /* 포지션 고정 */
+            right: 2.5%; /* - %도 할수 있음*/
+            bottom: 20px; /* 밑에서 5px */
+            display: none; /* 보여지지 없음 - 기본적으로 안보여지게 */
+            z-index: 9999; /* 포지션을 먼저 지정후 z-좌표(레이어) : 9999입니다. */
+
+            text-decoration: none;
+        }
+
     </style>
     <script>
     $(document).ready(function () {
@@ -176,7 +186,7 @@
                                         <div class="card">
                                             <img src="" class="card-img-top" alt="...">
                                             <div class="card-body">
-                                                <a href="/index_sub?mnt_no=${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
                                                 <p class="card-text">${muse_address}</p>
                                             </div>
                                         </div>
@@ -187,7 +197,7 @@
         })
     }
     function searching(){
-        $('#myCards').empty();
+        $('#myCards').empty()
         let search_txt = $('#searchText').val()
 
         $.ajax({
@@ -205,7 +215,7 @@
                                         <div class="card">
                                             <img src="" class="card-img-top" alt="...">
                                             <div class="card-body">
-                                                <a href="/index_sub?mnt_no=${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
                                                 <p class="card-text">${muse_address}</p>
                                             </div>
                                         </div>
@@ -218,6 +228,27 @@
     function open_search() {
         $('.searchBox').slideToggle();
     }
+    function enter_search(event) {
+        let key = event.key;
+        if (key == 'Enter') {
+            searching();
+        }
+    }
+    $(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 250) { //250 넘으면 버튼이 보여집니다.
+                    $('#topBtn').fadeIn();
+                } else {
+                    $('#topBtn').fadeOut();
+                }
+            }); // 버튼 클릭시
+            $("#topBtn").click(function () {
+                $('html, body').animate({
+                    scrollTop: 0 // 0 까지 animation 이동합니다.
+                }, 400); // 속도 400
+                return false;
+            });
+        });
     </script>
 </head>
 <body>
@@ -232,7 +263,7 @@
         </div>
         <div class="searchBox">
             <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
-                <input id="searchText" type="text" class="form-control" placeholder="검색어를 입력해주세요"
+                <input id="searchText" onkeyup="enter_search(event)" type="text" class="form-control" placeholder="검색어를 입력해주세요"
                        aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
                 <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
             </div>
@@ -294,8 +325,7 @@
                 </p>
             </div>
         </footer>
-
-
+        <a id="topBtn" href="#"><button type="button" class="btn btn-warning">top</button></a>
     </div>
 </body>
 </html>
