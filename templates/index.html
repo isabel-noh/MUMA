@@ -165,6 +165,7 @@
             }
         })
     }
+
     function filtering(){
         $('#myCards').empty()
         let muse_builder = $('#muse_type').val()
@@ -197,7 +198,7 @@
         })
     }
     function searching(){
-        $('#myCards').empty()
+        $('#myCards').empty();
         let search_txt = $('#searchText').val()
 
         $.ajax({
@@ -225,66 +226,6 @@
             }
         })
     }
-// function filtering(){
-//         $('#myCards').empty()
-//         let muse_builder = $('#muse_type').val()
-//         let muse_type = $('#muse_art').val()
-//         let muse_area = $('#muse_area').val()
-//
-//         $.ajax({
-//             type: 'GET',
-//             url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
-//             data: {},
-//             success: function (response) {
-//             let rows = response['filter_list']
-//                 for (let i = 0; i < rows.length; i++) {
-//                     let muse_name = rows[i]['name']
-//                     let muse_address = rows[i]['addr']
-//                     let muse_type = rows[i]['type']
-//                     let index = rows[i]['index']
-//                     let temp_html = `<div class="col">
-//                                         <div class="card">
-//                                             <img src="" class="card-img-top" alt="...">
-//                                             <div class="card-body">
-//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-//                                                 <p class="card-text">${muse_address}</p>
-//                                             </div>
-//                                         </div>
-//                                     </div>`
-//                     $('#myCards').append(temp_html)
-//                 }
-//             }
-//         })
-//     }
-//     function searching(){
-//         $('#myCards').empty();
-//         let search_txt = $('#searchText').val()
-//
-//         $.ajax({
-//             type: 'GET',
-//             url: '/muse_search?text_give='+search_txt,
-//             data: {},
-//             success: function (response) {
-//             let rows = response['search_list']
-//                 for (let i = 0; i < rows.length; i++) {
-//                     let muse_name = rows[i]['name']
-//                     let muse_address = rows[i]['addr']
-//                     let muse_type = rows[i]['type']
-//                     let index = rows[i]['index']
-//                     let temp_html = `<div class="col">
-//                                         <div class="card">
-//                                             <img src="" class="card-img-top" alt="...">
-//                                             <div class="card-body">
-//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-//                                                 <p class="card-text">${muse_address}</p>
-//                                             </div>
-//                                         </div>
-//                                     </div>`
-//                     $('#myCards').append(temp_html)
-//                 }
-//             }
-//         })
-//     }
     function open_search() {
         $('.searchBox').slideToggle();
     }
@@ -310,7 +251,7 @@
             });
         });
 
-    
+
     </script>
 </head>
 <body>
