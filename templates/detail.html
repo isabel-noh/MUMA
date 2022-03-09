@@ -132,68 +132,69 @@
             width: 100%;
             max-width: 800px;
             margin: 0 auto;
-            /*position: relative;*/
-        }
-        .showdb .dbinfo .inner {
             display: flex;
-            /*flex-wrap: wrap;*/
             flex-direction: row;
         }
         .showdb .dbinfo .dbimg {
-            /*width: 100%;*/
-            max-width: 100%;
-            /*margin: 0px 0px 500px 0px;*/
-            width: 350px;
-            display: flex;
-            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
             flex-grow: 1;
-        }
-        .showdb .dbinfo .dbimg btns {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 350px;
-            margin: auto;
-        }
-
-        .showdb .dbinfo .dbimg button {
-            margin: auto;
-            width: 160px;
-        }
-        .showdb .dbinfo .dbimg button:hover {
-            background-color: black;
+            background-image: url('{{ url_for("static", filename="museum-art.png") }}');
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
         }
 
         .showdb .dbinfo .dbmain {
-            overflow: auto;
-            margin-top: 5px;
-            /*min-width: 350px;*/
-            /*width: 100%;*/
-            /*height: 200px;*/
+            overflow: hidden;
+            margin-top: 10px;
+            min-width: 350px;
+            width: 100%;
             padding-left: 35px;
             flex-grow: 1;
         }
         .showdb .dbinfo .dbmain .db-head {
-            /*background-color: orange;*/
             display: flex;
             flex-direction: row;
+            margin-bottom: 10px;
+        }
+        .showdb .dbinfo .dbmain .info_head {
+            font-weight: 700;
         }
         .showdb .dbinfo .dbmain .type {
             color: #0066cc;
             font-size: 16px;
             font-weight: 700;
-            margin-top: 4px;
-            margin-right: 10px;
+            font-style: italic;
+            margin-top: 5px;
+            margin-left: 15px;
         }
         .showdb .dbinfo .dbmain .name {
             font-size: 24px;
             font-weight: 700;
         }
+        .showdb .dbinfo .dbmain .db-intro {
+            line-height: 1.6;
+        }
 
-        /*.showdb .dbinfo .dbdetail {*/
-        /*    margin-top: 35px;*/
-        /*}*/
+        .showdb .dbinfo btns {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+
+        .showdb .dbinfo button {
+            margin: auto;
+            width: 100%;
+            max-width: 160px;
+        }
+        .showdb .dbinfo button:hover {
+            background-color: black;
+        }
+
 
         /*COMMENT*/
         .mycomment {
@@ -261,7 +262,7 @@
 
         let map_count = 0
         $(document).ready(function () {
-            //comments
+            //comments 보여주기
             get_posts()
             // map 보여주기
             get_map()
@@ -301,8 +302,6 @@
             let name = '박예슬'
             let mm_no = {{ museum.index|tojson }}
 
-            // alert(mm_no)
-
             if (score == '별점주기') {
                 alert('별점을 선택해주세요')
                 return
@@ -310,8 +309,6 @@
                 alert('내용을 작성해주세요')
                 return
             }
-            // score = Number(score)
-            // console.log(typeof(comment), typeof(score))
             $.ajax({
                 type: "POST",
                 url: "/posting",
@@ -337,16 +334,13 @@
                 success: function (response) {
                     if (response["result"] == "success") {
                         let posts = response["posts"]
-                        // console.log(posts)
                         let score_sum = 0
                         let score_average = 0
                         for (let i = 0; i < posts.length; i++) {
                             let post = posts[i]
                             let star_image = '⭐'.repeat(post["score"])
-                            // let time_post = new Date(post["date"])
                             score_sum += Number(post["score"])
                             score_average = score_sum / ( i + 1 )
-                            // console.log(score_sum, score_average.toFixed(1))
                             let html_temp = `<div class="comment" id='${post["_id"]}'>
                                                 <div class="comment-item star">${star_image}</div>
                                                 <div class="comment-item text">${post["comment"]}</div>
@@ -415,28 +409,24 @@
 <div class="showdb">
     <div class="dbinfo">
 
-        <div class="inner">
-            <div class="dbimg">
-<!--                <img src="..." class="img-fluid" alt="...">-->
-                <img src="https://gongju.museum.go.kr/_prog/download/?site_dvs_cd=gongju&func_gbn_cd=main_visual&mng_no=68" alt="국립중앙박물관">
+            <div class="dbimg"></div>
+            <div class="dbmain" id="museum_maindb">
+                <div class="db-head">
+                    <h1 class="name">{{ museum.name }}</h1>
+                    <p class="type">#{{ museum.type }}</p>
+                </div>
+                <p><span class="info_head">주 소</span> : {{ museum.addr }}</p>
+                <p><span class="info_head">홈페이지</span> : {{ museum.url }}</p>
+                <p><span class="info_head">전화번호</span> : {{ museum.phone }}</p>
+                <p><span class="info_head">영업시간</span> : {{ museum.open }} ~ {{ museum.close }}</p>
+                <p><span class="info_head">휴무정보</span> : {{ museum.rest_info }}</p>
+                <p class="db-intro">{{ museum.introduce }}</p>
+
                 <div class="btns">
                     <button type="button" class="btn btn-outline-dark img_insert">사진 등록</button>
                     <button type="button" id="map_btn"class="btn btn-outline-dark show_map" onclick="hey_map()">지도 보기</button>
                 </div>
             </div>
-            <div class="dbmain" id="museum_maindb">
-                <div class="db-head">
-                    <p class="type">{{ museum.type }}</p>
-                    <h1 class="name">{{ museum.name }}</h1>
-                </div>
-                <p>주소지 : {{ museum.addr }}</p>
-                <p>홈페이지 : {{ museum.url }}</p>
-                <p>전화 : {{ museum.phone }}</p>
-                <p>영업시간 : {{ museum.open }} ~ {{ museum.close }}</p>
-                <p>휴무정보 : {{ museum.rest_info }}</p>
-                <p>{{ museum.introduce }}</p>
-            </div>
-        </div>
 
     </div>
 </div>
@@ -465,7 +455,6 @@
 
 </div>
 <div id="score_average">
-<!--    <p>평점 ()</p>-->
 </div>
 <div class="comment-list" id="comment-list">
     <div class="comment">
