@@ -10,9 +10,9 @@
     <meta property="og:image" content="http://res.heraldm.com/content/image/2020/05/05/20200505000141_0.jpg" />
 <!--    static폴더 저장 이미지 사용시 -->
 <!--    <meta property="og:image" content="{{ url_for('static', filename='logo_red.png') }}"/>-->
-<!--    파비콘 아이콘 넣게 되면 연결-->
-<!--    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
-<!--    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">-->
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -135,15 +135,13 @@
             display: flex;
             flex-direction: row;
         }
-        .showdb .dbinfo .dbimg {
+        .showdb .dbinfo .dbimg img {
+            background-color: orange;
             width: 100%;
-            max-width: 400px;
-            height: 400px;
+            min-width: 350px;
+            height: auto;
             flex-grow: 1;
-            background-image: url('{{ url_for("static", filename="museum-art.png") }}');
-            background-position: center;
-            background-size: contain;
-            background-repeat: no-repeat;
+            object-fit: contain;
         }
 
         .showdb .dbinfo .dbmain {
@@ -178,6 +176,14 @@
             line-height: 1.6;
         }
 
+        .showdb .dbinfo .dbmain .show_map {
+            text-decoration : none;
+        }
+
+        .showdb .dbinfo .dbmain .input-group {
+            margin-top: 30px;
+        }
+
         .showdb .dbinfo btns {
             display: flex;
             flex-direction: column;
@@ -185,16 +191,6 @@
             align-items: center;
             margin: auto;
         }
-
-        .showdb .dbinfo button {
-            margin: auto;
-            width: 100%;
-            max-width: 160px;
-        }
-        .showdb .dbinfo button:hover {
-            background-color: black;
-        }
-
 
         /*COMMENT*/
         .mycomment {
@@ -262,7 +258,7 @@
 
         let map_count = 0
         $(document).ready(function () {
-            //comments 보여주기
+            //comments
             get_posts()
             // map 보여주기
             get_map()
@@ -295,12 +291,39 @@
             });
         }
 
+        function saveimg() {
+            // alert("hedd!")
+            let mm_no = {{ museum.index|tojson }}
+
+
+            let file = $('#inputGroupFile04')[0].files[0]
+            let form_data = new FormData()
+
+            form_data.append("file_give", file)
+            form_data.append("mmnum_give", mm_no)
+
+            $.ajax({
+                type: "POST",
+                url: "/saveimg",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert(response["msg"])
+                    window.location.reload()
+                }
+            });
+        }
+
         function post() {
             let comment = $("#textarea-post").val()
             let score = $('#inputGroupSelect01').val()
             let today = new Date().toISOString()
             let name = '박예슬'
             let mm_no = {{ museum.index|tojson }}
+
+            // alert(mm_no)
 
             if (score == '별점주기') {
                 alert('별점을 선택해주세요')
@@ -309,6 +332,8 @@
                 alert('내용을 작성해주세요')
                 return
             }
+            // score = Number(score)
+            // console.log(typeof(comment), typeof(score))
             $.ajax({
                 type: "POST",
                 url: "/posting",
@@ -334,13 +359,16 @@
                 success: function (response) {
                     if (response["result"] == "success") {
                         let posts = response["posts"]
+                        // console.log(posts)
                         let score_sum = 0
                         let score_average = 0
                         for (let i = 0; i < posts.length; i++) {
                             let post = posts[i]
                             let star_image = '⭐'.repeat(post["score"])
+                            // let time_post = new Date(post["date"])
                             score_sum += Number(post["score"])
                             score_average = score_sum / ( i + 1 )
+                            // console.log(score_sum, score_average.toFixed(1))
                             let html_temp = `<div class="comment" id='${post["_id"]}'>
                                                 <div class="comment-item star">${star_image}</div>
                                                 <div class="comment-item text">${post["comment"]}</div>
@@ -384,6 +412,10 @@
             })
         }
 
+        function insert_pic() {
+            alert('사진을 넣어볼까?');
+        }
+
     </script>
 </head>
 
@@ -409,22 +441,33 @@
 <div class="showdb">
     <div class="dbinfo">
 
-            <div class="dbimg"></div>
-            <div class="dbmain" id="museum_maindb">
+        <div class="dbimg">
+            {% if img != None %}
+            <img src="/static/{{ img.file }}" alt="aba"/>
+            {% endif %}
+
+            {% if img == None %}
+            <img src="/static/museum-art.png" alt="aba"/>
+            {% endif %}
+
+        </div>
+        <div class="dbmain" id="museum_maindb">
                 <div class="db-head">
                     <h1 class="name">{{ museum.name }}</h1>
                     <p class="type">#{{ museum.type }}</p>
                 </div>
-                <p><span class="info_head">주 소</span> : {{ museum.addr }}</p>
                 <p><span class="info_head">홈페이지</span> : {{ museum.url }}</p>
                 <p><span class="info_head">전화번호</span> : {{ museum.phone }}</p>
                 <p><span class="info_head">영업시간</span> : {{ museum.open }} ~ {{ museum.close }}</p>
                 <p><span class="info_head">휴무정보</span> : {{ museum.rest_info }}</p>
+                <p><span class="info_head">주 소</span> : {{ museum.addr }}</p>
+                <p><a href="javascript:void(0);" id="show_map" class="show_map" onclick="hey_map()">👉 지도로 보기</a></p>
                 <p class="db-intro">{{ museum.introduce }}</p>
 
-                <div class="btns">
-                    <button type="button" class="btn btn-outline-dark img_insert">사진 등록</button>
-                    <button type="button" id="map_btn"class="btn btn-outline-dark show_map" onclick="hey_map()">지도 보기</button>
+                <div class="input-group">
+                    <input type="file" class="form-control" id="inputGroupFile04"
+                           aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onclick="saveimg()">사진 등록</button>
                 </div>
             </div>
 
@@ -455,6 +498,7 @@
 
 </div>
 <div id="score_average">
+<!--    <p>평점 ()</p>-->
 </div>
 <div class="comment-list" id="comment-list">
     <div class="comment">

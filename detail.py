@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from pymongo import MongoClient
+from datetime import datetime
 import requests
 import certifi
 import hashlib
@@ -70,9 +71,11 @@ def mnt_select():
 # detailpg.html로 연결하면서 해당박물관 데이터를 전송
 @app.route('/detail/mm_no/<index>')
 def detail(index):
+    mm_no = index
     index = int(index)
     museum = db.muse_info.find_one({'index': index})
-
+    img = db.mimgs.find_one({'mm_no': mm_no})
+    print(img, museum)
     # 지도 주소 위도, 경도로 변환 : x, y 값
     headers = {
         "X-NCP-APIGW-API-KEY-ID": "afrl6tl1y2",
@@ -85,11 +88,34 @@ def detail(index):
         if len(response["addresses"]) > 0:
             x = float(response["addresses"][0]["x"])
             y = float(response["addresses"][0]["y"])
-            print(museum["introduce"], x, y)
         else:
             print("좌표를 찾지 못했습니다")
 
-    return render_template('detail.html', museum = museum, addr_x = x, addr_y = y)
+    return render_template('detail.html', museum = museum, img=img, addr_x = x, addr_y = y)
+
+@app.route('/saveimg', methods=['POST'])
+def saveimg():
+    mmnum_receive = request.form["mmnum_give"]
+    file = request.files["file_give"]
+
+    extension = file.filename.split('.')[-1]
+
+    today = datetime.now()
+    mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+
+    filename = f'file-{mytime}'
+    save_to = f'static/{filename}.{extension}'
+    file.save(save_to)
+
+    doc = {
+        'mm_no': mmnum_receive,
+        'file': f'{filename}.{extension}'
+    }
+
+    db.mimgs.insert_one(doc)
+
+    return jsonify({'msg': '저장 완료!'})
+
 
 @app.route('/posting', methods=['POST'])
 def posting():
