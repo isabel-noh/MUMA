@@ -125,10 +125,10 @@
             font-size: 0.8em;
         }
         a#topBtn {
-            position: fixed; /* 포지션 고정 */
-            right: 2.5%; /* - %도 할수 있음*/
-            bottom: 20px; /* 밑에서 5px */
-            display: none; /* 보여지지 없음 - 기본적으로 안보여지게 */
+            position: fixed;
+            right: 2.5%;
+            bottom: 20px;
+            display: none;
             z-index: 9999; /* 포지션을 먼저 지정후 z-좌표(레이어) : 9999입니다. */
 
             text-decoration: none;
@@ -225,66 +225,66 @@
             }
         })
     }
-function filtering(){
-        $('#myCards').empty()
-        let muse_builder = $('#muse_type').val()
-        let muse_type = $('#muse_art').val()
-        let muse_area = $('#muse_area').val()
-
-        $.ajax({
-            type: 'GET',
-            url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
-            data: {},
-            success: function (response) {
-            let rows = response['filter_list']
-                for (let i = 0; i < rows.length; i++) {
-                    let muse_name = rows[i]['name']
-                    let muse_address = rows[i]['addr']
-                    let muse_type = rows[i]['type']
-                    let index = rows[i]['index']
-                    let temp_html = `<div class="col">
-                                        <div class="card">
-                                            <img src="" class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-                                                <p class="card-text">${muse_address}</p>
-                                            </div>
-                                        </div>
-                                    </div>`
-                    $('#myCards').append(temp_html)
-                }
-            }
-        })
-    }
-    function searching(){
-        $('#myCards').empty();
-        let search_txt = $('#searchText').val()
-
-        $.ajax({
-            type: 'GET',
-            url: '/muse_search?text_give='+search_txt,
-            data: {},
-            success: function (response) {
-            let rows = response['search_list']
-                for (let i = 0; i < rows.length; i++) {
-                    let muse_name = rows[i]['name']
-                    let muse_address = rows[i]['addr']
-                    let muse_type = rows[i]['type']
-                    let index = rows[i]['index']
-                    let temp_html = `<div class="col">
-                                        <div class="card">
-                                            <img src="" class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-                                                <p class="card-text">${muse_address}</p>
-                                            </div>
-                                        </div>
-                                    </div>`
-                    $('#myCards').append(temp_html)
-                }
-            }
-        })
-    }
+// function filtering(){
+//         $('#myCards').empty()
+//         let muse_builder = $('#muse_type').val()
+//         let muse_type = $('#muse_art').val()
+//         let muse_area = $('#muse_area').val()
+//
+//         $.ajax({
+//             type: 'GET',
+//             url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
+//             data: {},
+//             success: function (response) {
+//             let rows = response['filter_list']
+//                 for (let i = 0; i < rows.length; i++) {
+//                     let muse_name = rows[i]['name']
+//                     let muse_address = rows[i]['addr']
+//                     let muse_type = rows[i]['type']
+//                     let index = rows[i]['index']
+//                     let temp_html = `<div class="col">
+//                                         <div class="card">
+//                                             <img src="" class="card-img-top" alt="...">
+//                                             <div class="card-body">
+//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+//                                                 <p class="card-text">${muse_address}</p>
+//                                             </div>
+//                                         </div>
+//                                     </div>`
+//                     $('#myCards').append(temp_html)
+//                 }
+//             }
+//         })
+//     }
+//     function searching(){
+//         $('#myCards').empty();
+//         let search_txt = $('#searchText').val()
+//
+//         $.ajax({
+//             type: 'GET',
+//             url: '/muse_search?text_give='+search_txt,
+//             data: {},
+//             success: function (response) {
+//             let rows = response['search_list']
+//                 for (let i = 0; i < rows.length; i++) {
+//                     let muse_name = rows[i]['name']
+//                     let muse_address = rows[i]['addr']
+//                     let muse_type = rows[i]['type']
+//                     let index = rows[i]['index']
+//                     let temp_html = `<div class="col">
+//                                         <div class="card">
+//                                             <img src="" class="card-img-top" alt="...">
+//                                             <div class="card-body">
+//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+//                                                 <p class="card-text">${muse_address}</p>
+//                                             </div>
+//                                         </div>
+//                                     </div>`
+//                     $('#myCards').append(temp_html)
+//                 }
+//             }
+//         })
+//     }
     function open_search() {
         $('.searchBox').slideToggle();
     }
@@ -309,6 +309,8 @@ function filtering(){
                 return false;
             });
         });
+
+    
     </script>
 </head>
 <body>
