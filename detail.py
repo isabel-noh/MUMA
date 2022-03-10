@@ -7,9 +7,8 @@ import hashlib
 
 app = Flask(__name__)
 
-client = MongoClient('mongodb://test:sparta@cluster0-shard-00-00.ite7q.mongodb.net:27017,cluster0-shard-00-01.ite7q.mongodb.net:27017,cluster0-shard-00-02.ite7q.mongodb.net:27017/Cluster0?ssl=true&replicaSet=atlas-1371nk-shard-0&authSource=admin&retryWrites=true&w=majority')
+client = MongoClient(config.mongoDB)
 db = client.dbsparta
-
 
 @app.route('/')
 def main():
@@ -71,11 +70,12 @@ def mnt_select():
 # detailpg.html로 연결하면서 해당박물관 데이터를 전송
 @app.route('/detail/mm_no/<index>')
 def detail(index):
-    mm_no = index
     index = int(index)
     museum = db.muse_info.find_one({'index': index})
-    img = db.mimgs.find_one({'mm_no': mm_no})
-    print(img, museum)
+    imgs = list(db.muse_imgs.find({'mm_no': index}))
+    img = []
+    for img in imgs:    # 가장 나중에 넣은 사진을 가져오게 하기
+        img = img
     # 지도 주소 위도, 경도로 변환 : x, y 값
     headers = {
         "X-NCP-APIGW-API-KEY-ID": "afrl6tl1y2",
@@ -93,10 +93,11 @@ def detail(index):
 
     return render_template('detail.html', museum = museum, img=img, addr_x = x, addr_y = y)
 
-@app.route('/saveimg', methods=['POST'])
-def saveimg():
+@app.route('/save_img', methods=['POST'])
+def save_img():
     mmnum_receive = request.form["mmnum_give"]
     file = request.files["file_give"]
+    mm_no = int(mmnum_receive)      # 나중에 동일한 방식으로 index 이용하기 위해 숫자변환
 
     extension = file.filename.split('.')[-1]
 
@@ -108,13 +109,13 @@ def saveimg():
     file.save(save_to)
 
     doc = {
-        'mm_no': mmnum_receive,
+        'mm_no': mm_no,
         'file': f'{filename}.{extension}'
     }
 
-    db.mimgs.insert_one(doc)
+    db.muse_imgs.insert_one(doc)
 
-    return jsonify({'msg': '저장 완료!'})
+    return jsonify({'msg': '사진 등록 완료!'})
 
 
 @app.route('/posting', methods=['POST'])

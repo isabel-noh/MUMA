@@ -5,29 +5,31 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+<!--    og 태그-->
     <meta property="og:title" content="MUMA(Museum Masters)" />
     <meta property="og:description" content="뮤지엄 마스터들을 위한 박물관에 대한 정보를 공유하고 후기를 남기는 공간입니다." />
-    <meta property="og:image" content="http://res.heraldm.com/content/image/2020/05/05/20200505000141_0.jpg" />
-<!--    static폴더 저장 이미지 사용시 -->
-<!--    <meta property="og:image" content="{{ url_for('static', filename='logo_red.png') }}"/>-->
+    <meta property="og:image" content="{{ url_for('static', filename='museum-art.png') }}" />
 
+<!--    파비콘 연결-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
 
-<!--    지도 api -->
+<!--    네이버 지도 api -->
     <script type="text/javascript"
             src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=afrl6tl1y2"></script>
     <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <title>MUMA | detail_pg_name </title>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<!--    탭에 페이지에 해당하는 박물관 이름 뜨게하기-->
+    <title>MUMA | {{ museum.name}} </title>
 
 
     <style>
@@ -48,6 +50,8 @@
             max-width: 800px;
             height: 400px;
             margin: 35px auto;
+
+            display: none;
         }
 
         /*HEADER*/
@@ -73,7 +77,6 @@
             color: #333333;
             text-decoration: none;
         }
-
         .mytitle .sub-menu {
             position: absolute;
             top: 0;
@@ -95,7 +98,6 @@
             font-size: 14px;
             border: 1px solid #b0b0b0;
         }
-
         .mytitle .sub-menu .search .search-btn {
             width: 100px;
             height: 40px;
@@ -192,6 +194,7 @@
             margin: auto;
         }
 
+
         /*COMMENT*/
         .mycomment {
             width: 100%;
@@ -244,9 +247,6 @@
         .comment-list .comment-item.text {
             flex-grow: 1;
         }
-        #map {
-            display: none;
-        }
         #score_average {
             width: 800px;
             height: 50px;
@@ -258,14 +258,14 @@
 
         let map_count = 0
         $(document).ready(function () {
-            //comments
+            // 댓글 보여주기
             get_posts()
-            // map 보여주기
+            // map 보여주기, 지도를 그려는 주는데, 현재 지도 display:none 상태로 처음엔 안보이게 하기
             get_map()
         });
 
-        function hey_map() {
-            if (map_count == 0) {
+        function hey_map() {        // 맵을 불러와서 보여주거나, 숨긴다
+            if (map_count == 0) {   // script 처음에서 선언해준 map_cout 이용, 클릭수에 따라, 0일때 보여주고, 1일때 숨기게
                 $('#map').show()
                 map_count += 1
             }else {
@@ -273,9 +273,10 @@
                 map_count -= 1
             }
         }
-        function get_map() {
-            let x = {{ addr_x|tojson }};
-            let y = {{ addr_y|tojson }};
+
+        function get_map() {          // detail.html 로 연결하면서 가져온 위도, 경도 값 x, y 이용
+            let x = '{{ addr_x }}';   // Jinja2 템플릿 언어 이용
+            let y = '{{ addr_y }}';
             let map = new naver.maps.Map('map', {
                 center: new naver.maps.LatLng(y, x),
                 zoom: 18,
@@ -291,29 +292,35 @@
             });
         }
 
-        function saveimg() {
-            // alert("hedd!")
-            let mm_no = {{ museum.index|tojson }}
+        function save_img() {
+            let test = $('#inputGroupFile04').val()
+            console.log(test)
 
+            if (test == "") {     // 일단 input창에 사진 정보가 없으면 사진이 올라와있지 않은 것
+                alert('[파일 선택]을 눌러 사진을 등록하세요!');
+                return
+            } else {
+                let mm_no = '{{ museum.index }}'    // 현재페이지의 박물관 index를 사진 정보와 함께 보내기 위해 받아옴
 
-            let file = $('#inputGroupFile04')[0].files[0]
-            let form_data = new FormData()
+                let file = $('#inputGroupFile04')[0].files[0]
+                let form_data = new FormData()
 
-            form_data.append("file_give", file)
-            form_data.append("mmnum_give", mm_no)
+                form_data.append("file_give", file)
+                form_data.append("mmnum_give", mm_no)
 
-            $.ajax({
-                type: "POST",
-                url: "/saveimg",
-                data: form_data,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    alert(response["msg"])
-                    window.location.reload()
-                }
-            });
+                $.ajax({
+                    type: "POST",
+                    url: "/save_img",
+                    data: form_data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        alert(response["msg"])
+                        window.location.reload()
+                    }
+                });
+            }
         }
 
         function post() {
@@ -323,8 +330,6 @@
             let name = '박예슬'
             let mm_no = {{ museum.index|tojson }}
 
-            // alert(mm_no)
-
             if (score == '별점주기') {
                 alert('별점을 선택해주세요')
                 return
@@ -332,8 +337,7 @@
                 alert('내용을 작성해주세요')
                 return
             }
-            // score = Number(score)
-            // console.log(typeof(comment), typeof(score))
+
             $.ajax({
                 type: "POST",
                 url: "/posting",
@@ -359,16 +363,13 @@
                 success: function (response) {
                     if (response["result"] == "success") {
                         let posts = response["posts"]
-                        // console.log(posts)
                         let score_sum = 0
                         let score_average = 0
                         for (let i = 0; i < posts.length; i++) {
                             let post = posts[i]
                             let star_image = '⭐'.repeat(post["score"])
-                            // let time_post = new Date(post["date"])
                             score_sum += Number(post["score"])
                             score_average = score_sum / ( i + 1 )
-                            // console.log(score_sum, score_average.toFixed(1))
                             let html_temp = `<div class="comment" id='${post["_id"]}'>
                                                 <div class="comment-item star">${star_image}</div>
                                                 <div class="comment-item text">${post["comment"]}</div>
@@ -412,10 +413,6 @@
             })
         }
 
-        function insert_pic() {
-            alert('사진을 넣어볼까?');
-        }
-
     </script>
 </head>
 
@@ -441,35 +438,35 @@
 <div class="showdb">
     <div class="dbinfo">
 
-        <div class="dbimg">
-            {% if img != None %}
-            <img src="/static/{{ img.file }}" alt="aba"/>
-            {% endif %}
-
-            {% if img == None %}
+        <div class="dbimg">     <!--페이지 열때 가져온 img db에서 값이 있을 때만, 해당 사진 보여주기, 없으면 기본 사진-->
+            {% if img == [] %}
             <img src="/static/museum-art.png" alt="aba"/>
+            {% else %}
+            <img src="/static/{{ img.file }}" alt="aba"/>
             {% endif %}
 
         </div>
         <div class="dbmain" id="museum_maindb">
-                <div class="db-head">
-                    <h1 class="name">{{ museum.name }}</h1>
-                    <p class="type">#{{ museum.type }}</p>
-                </div>
-                <p><span class="info_head">홈페이지</span> : {{ museum.url }}</p>
-                <p><span class="info_head">전화번호</span> : {{ museum.phone }}</p>
-                <p><span class="info_head">영업시간</span> : {{ museum.open }} ~ {{ museum.close }}</p>
-                <p><span class="info_head">휴무정보</span> : {{ museum.rest_info }}</p>
-                <p><span class="info_head">주 소</span> : {{ museum.addr }}</p>
-                <p><a href="javascript:void(0);" id="show_map" class="show_map" onclick="hey_map()">👉 지도로 보기</a></p>
-                <p class="db-intro">{{ museum.introduce }}</p>
-
-                <div class="input-group">
-                    <input type="file" class="form-control" id="inputGroupFile04"
-                           aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                    <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onclick="saveimg()">사진 등록</button>
-                </div>
+            <div class="db-head">
+                <h1 class="name">{{ museum.name }}</h1>
+                <p class="type">#{{ museum.type }}</p>
             </div>
+            <p><span class="info_head">홈페이지</span> : {{ museum.url }}</p>
+            <p><span class="info_head">전화번호</span> : {{ museum.phone }}</p>
+            <p><span class="info_head">영업시간</span> : {{ museum.open }} ~ {{ museum.close }}</p>
+            <p><span class="info_head">휴무정보</span> : {{ museum.rest_info }}</p>
+            <p><span class="info_head">주 소</span> : {{ museum.addr }}</p>
+            <p><a href="javascript:void(0);" id="show_map" class="show_map" onclick="hey_map()">👉 지도로 보기</a></p>
+            <p class="db-intro">{{ museum.introduce }}</p>
+
+            <div class="input-group">
+                <input type="file" class="form-control" id="inputGroupFile04"
+                       aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onclick="save_img()">
+                    사진 등록
+                </button>
+            </div>
+        </div>
 
     </div>
 </div>
