@@ -21,6 +21,7 @@ db = client.dbsparta
 SECRET_KEY = config.secret_key # config 처리 해줘야 합니다. 깃허브에서는 숨겨둡니다.
 KEY_SECRET = config.key_secret # 저는 리프레시 토큰과 액세스 토큰의 암호화 코드를 각각 달리 지정해 줬습니다. 사용하시려면 두 암호에 아무 문자열이나 입력해주세요.
 
+#각 박물관에 해당하는 index의 이름을 가진 이미지 폴더 생성
 def create_imgfold(index):
     try:
         dir = 'static/'+index
@@ -29,6 +30,7 @@ def create_imgfold(index):
     except:
         return
 
+# 동일 경로에 동일 이름으로 사진 저장되면 기존의 사진 삭제
 def del_img(index):
     dir = 'static/' + index
     try:
@@ -136,56 +138,33 @@ def muse_select():
 
     museums = list(db.muse_info.find({}, {'_id': False}))  # 박물관의 전체 목록을 museums 변수로 받아옵니다.
 
+    #각 옵션에 따른 필터링
     if builder_receive == '국공립':
         for museum in museums:
             if museum["type"] == '국립' or museum["type"] == '공립':
                 if type_receive == '박물관전체':
                     if area_receive == '지역전체':
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                 elif type_receive in museum['name']:
                     if area_receive == '지역전체':
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
 
     elif builder_receive == '타입전체':
         for museum in museums:
             if type_receive == '박물관전체':
                 if area_receive == '지역전체':
                     doc.append(museum)
-                    index = museum['index']
-                    img = db.mimgs.find_one({'mm_no': index})
-                    doc.append(img)
                 elif area_receive in museum['addr']:
                     doc.append(museum)
-                    index = museum['index']
-                    img = db.mimgs.find_one({'mm_no': index})
-                    doc.append(img)
             elif type_receive in museum['name']:
                 if area_receive == '지역전체':
                     doc.append(museum)
-                    index = museum['index']
-                    img = db.mimgs.find_one({'mm_no': index})
-                    doc.append(img)
                 elif area_receive in museum['addr']:
                     doc.append(museum)
-                    index = museum['index']
-                    img = db.mimgs.find_one({'mm_no': index})
-                    doc.append(img)
 
     else:
         for museum in museums:
@@ -193,25 +172,13 @@ def muse_select():
                 if type_receive == '박물관전체': #str.contains('박물관')
                     if area_receive == '지역전체':
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                 elif type_receive in museum['name']:
                     if area_receive == '지역전체':
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
-                        index = museum['index']
-                        img = db.mimgs.find_one({'mm_no': index})
-                        doc.append(img)
 
     return jsonify({'filter_list': doc, 'msg': '검색완료!'})
 
@@ -278,7 +245,7 @@ def save_img():
     mmnum_receive = request.form["mmnum_give"]
     file = request.files["file_give"]
     create_imgfold(mmnum_receive) # 인덱스명에 맞는 폴더 만들기를 시도합니다.
-    del_img(mmnum_receive) # 인덱스명에 맞는 폴더 내부의 파일 삭제를 시도합니다.
+    del_img(mmnum_receive) # 인덱스명에 맞는 폴더 내부의 파일 삭제를 시도합니다.(초기화)
 
     mm_no = int(mmnum_receive)      # 나중에 동일한 방식으로 index 이용하기 위해 숫자변환
 
