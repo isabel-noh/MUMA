@@ -137,28 +137,36 @@
 
     </style>
     <script>
-    $(document).ready(function () {
-        listing();
-        chk_token() // 홈페이지가 렌더링됨과 동시에 새로 발급받은 토큰 데이터를 불러옵니다.
-    });
-    function chk_token(){
+        var search_data
+        // DB에서 검색된 데이터들을 넣어주는 전역변수입니다. let 변수와 달리 var 변수는 선언 후 스크립트 어디서든 사용 가능합니다.
+        // 다만 남용하면 클라이언트에 부담이 될 수 있습니다.
+        // 데이터를 클라이언트에서 받아 활용하므로, 요청이 줄어 서버측의 부담이 적습니다.
+        $(document).ready(function () {
+            listing();
+            chk_token() // 홈페이지가 렌더링됨과 동시에 새로 발급받은 토큰 데이터를 불러옵니다.
+            console.log(search_data)
+        });
+        function chk_token(){
             let token = '{{acc_token}}'
             if (token == ''){ } // 토큰의 데이터가 없다면 토큰을 만들지 않습니다.
             else{$.cookie('acc_token', token, {path: '/'})} // ref_token이 있어서 새 토큰을 발급받은 경우는 토큰을 만들어 줍니다.
-    }
-    function listing() {
-        $.ajax({
-            type: 'GET',
-            url: '/muse_info',
-            data: {},
-            success: function (response) {
-                let rows = response['mnt'];
-                for (let i = 0; i < rows.length; i++) {
-                    let muse_name = rows[i]['name']
-                    let muse_address = rows[i]['addr']
-                    let muse_type = rows[i]['type']
-                    let index = rows[i]['index']
-                    let temp_html = `<div class="col">
+        }
+        function listing() {
+            $.ajax({
+                type: 'GET',
+                url: '/muse_info',
+                async: false, // ajax를 통해 전송받은 결과값을 전역변수에 담아주기 위한 코드입니다.
+                data: {},
+                success: function (response) {
+                    search_data = response['mnt']
+                    let rows = response['mnt'];
+                    for (let i = 0; i < rows.length; i++) {
+                        if ( i == 30 ) { break } // for 문 안에서 특정 조건을 입력하면 조건문을 종료시킬 수 있습니다. for~break도 알아두세요!!
+                        let muse_name = rows[i]['name']
+                        let muse_address = rows[i]['addr']
+                        let muse_type = rows[i]['type']
+                        let index = rows[i]['index']
+                        let temp_html = `<div class="col">
                                             <div class="card">
                                                 <img src="" class="card-img-top" alt="...">
                                                 <div class="card-body">
@@ -167,29 +175,33 @@
                                                 </div>
                                             </div>
                                         </div>`
-                    $('#myCards').append(temp_html)
+                        $('#myCards').append(temp_html)
+                    }
                 }
-            }
-        })
-    }
-    function filtering(){
-        $('#myCards').empty()
-        let muse_builder = $('#muse_type').val()
-        let muse_type = $('#muse_art').val()
-        let muse_area = $('#muse_area').val()
+            })
+        }
+        function filtering(){
+            $('#myCards').empty()
+            let muse_builder = $('#muse_type').val()
+            let muse_type = $('#muse_art').val()
+            let muse_area = $('#muse_area').val()
 
-        $.ajax({
-            type: 'GET',
-            url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
-            data: {},
-            success: function (response) {
-            let rows = response['filter_list']
-                for (let i = 0; i < rows.length; i++) {
-                    let muse_name = rows[i]['name']
-                    let muse_address = rows[i]['addr']
-                    let muse_type = rows[i]['type']
-                    let index = rows[i]['index']
-                    let temp_html = `<div class="col">
+            $.ajax({
+                type: 'GET',
+                url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
+                async: false, // ajax를 통해 전송받은 결과값을 전역변수에 담아주기 위한 코드입니다.
+                data: {},
+                success: function (response) {
+                    search_data = response['filter_list']
+                    console.log(search_data)
+                    let rows = response['filter_list']
+                    for (let i = 0; i < rows.length; i++) {
+                        if ( i == 30 ) { break } // for 문 안에서 특정 조건을 입력하면 조건문을 종료시킬 수 있습니다. for~break도 알아두세요!!
+                        let muse_name = rows[i]['name']
+                        let muse_address = rows[i]['addr']
+                        let muse_type = rows[i]['type']
+                        let index = rows[i]['index']
+                        let temp_html = `<div class="col">
                                         <div class="card">
                                             <img src="" class="card-img-top" alt="...">
                                             <div class="card-body">
@@ -198,27 +210,32 @@
                                             </div>
                                         </div>
                                     </div>`
-                    $('#myCards').append(temp_html)
+                        $('#myCards').append(temp_html)
+                    }
                 }
-            }
-        })
-    }
-    function searching(){
-        $('#myCards').empty()
-        let search_txt = $('#searchText').val()
+            })
 
-        $.ajax({
-            type: 'GET',
-            url: '/muse_search?text_give='+search_txt,
-            data: {},
-            success: function (response) {
-            let rows = response['search_list']
-                for (let i = 0; i < rows.length; i++) {
-                    let muse_name = rows[i]['name']
-                    let muse_address = rows[i]['addr']
-                    let muse_type = rows[i]['type']
-                    let index = rows[i]['index']
-                    let temp_html = `<div class="col">
+        }
+        function searching(){
+            $('#myCards').empty()
+            let search_txt = $('#searchText').val()
+
+            $.ajax({
+                type: 'GET',
+                url: '/muse_search?text_give='+search_txt,
+                async: false, // ajax를 통해 전송받은 결과값을 전역변수에 담아주기 위한 코드입니다.
+                data: {},
+                success: function (response) {
+                    search_data = response['search_list']
+                    console.log(search_data)
+                    let rows = response['search_list']
+                    for (let i = 0; i < rows.length; i++) {
+                        if ( i == 30 ) { break } // for 문 안에서 특정 조건을 입력하면 조건문을 종료시킬 수 있습니다. for~break도 알아두세요!!
+                        let muse_name = rows[i]['name']
+                        let muse_address = rows[i]['addr']
+                        let muse_type = rows[i]['type']
+                        let index = rows[i]['index']
+                        let temp_html = `<div class="col">
                                         <div class="card">
                                             <img src="" class="card-img-top" alt="...">
                                             <div class="card-body">
@@ -227,71 +244,11 @@
                                             </div>
                                         </div>
                                     </div>`
-                    $('#myCards').append(temp_html)
+                        $('#myCards').append(temp_html)
+                    }
                 }
-            }
-        })
-    }
-// function filtering(){
-//         $('#myCards').empty()
-//         let muse_builder = $('#muse_type').val()
-//         let muse_type = $('#muse_art').val()
-//         let muse_area = $('#muse_area').val()
-//
-//         $.ajax({
-//             type: 'GET',
-//             url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
-//             data: {},
-//             success: function (response) {
-//             let rows = response['filter_list']
-//                 for (let i = 0; i < rows.length; i++) {
-//                     let muse_name = rows[i]['name']
-//                     let muse_address = rows[i]['addr']
-//                     let muse_type = rows[i]['type']
-//                     let index = rows[i]['index']
-//                     let temp_html = `<div class="col">
-//                                         <div class="card">
-//                                             <img src="" class="card-img-top" alt="...">
-//                                             <div class="card-body">
-//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-//                                                 <p class="card-text">${muse_address}</p>
-//                                             </div>
-//                                         </div>
-//                                     </div>`
-//                     $('#myCards').append(temp_html)
-//                 }
-//             }
-//         })
-//     }
-//     function searching(){
-//         $('#myCards').empty();
-//         let search_txt = $('#searchText').val()
-//
-//         $.ajax({
-//             type: 'GET',
-//             url: '/muse_search?text_give='+search_txt,
-//             data: {},
-//             success: function (response) {
-//             let rows = response['search_list']
-//                 for (let i = 0; i < rows.length; i++) {
-//                     let muse_name = rows[i]['name']
-//                     let muse_address = rows[i]['addr']
-//                     let muse_type = rows[i]['type']
-//                     let index = rows[i]['index']
-//                     let temp_html = `<div class="col">
-//                                         <div class="card">
-//                                             <img src="" class="card-img-top" alt="...">
-//                                             <div class="card-body">
-//                                                 <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-//                                                 <p class="card-text">${muse_address}</p>
-//                                             </div>
-//                                         </div>
-//                                     </div>`
-//                     $('#myCards').append(temp_html)
-//                 }
-//             }
-//         })
-//     }
+            })
+        }
     function open_search() {
         $('.searchBox').slideToggle();
     }
@@ -323,6 +280,32 @@
         $.removeCookie('ref_token', { path: '/' })
         window.location.reload()
     }
+    function more_btn(){
+        let cnt = document.getElementsByClassName('card-body').length
+        if (cnt == search_data.length){ return } // 클래스네임 card-body의 갯수와 검색데이터의 숫자가 같다면 모두 검색 되었으므로, 더 이상 진행할 필요가 없습니다. return은 메소드를 종료시킵니다.
+        let start = cnt // 검색을 시작할 인덱스
+        let end = cnt + 30 // 검색을 종료할 인덱스
+        let more_data = search_data.slice(start, end) // 클라이언트의 전역변수에 저장된 검색 결과들을 30개 단위로 잘라 배열로 만듭니다. 시행결과, 30개가 안되더라도 그 이하까지 자동으로 잘라오니 오류는 없습니다.
+        for (let i = 0; i < more_data.length; i++) {
+            let muse_name = more_data[i]['name']
+            let muse_address = more_data[i]['addr']
+            let muse_type = more_data[i]['type']
+            let index = more_data[i]['index']
+            let temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+            $('#myCards').append(temp_html)
+        }
+    }
+    $(".downBtn").click(function(){
+        $('html, body').animate({scrollTop:($('body').height())}, 200);
+    });
 
     </script>
 </head>
@@ -380,6 +363,9 @@
             <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
 
             </div>
+        </div>
+        <div style="text-align: center">
+            <button style="width: 300px" type="button" class="btn btn-warning" onclick="more_btn()">더보기</button>
         </div>
         <!--footer-->
         <footer class="footer">
