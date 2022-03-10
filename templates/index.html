@@ -24,6 +24,7 @@
             font-family: 'Noto Sans KR', sans-serif;
         }
         .header{
+            max-width: 1300px;
             width: 100%;
             height: 60px;
         }
@@ -166,15 +167,30 @@
                         let muse_address = rows[i]['addr']
                         let muse_type = rows[i]['type']
                         let index = rows[i]['index']
-                        let temp_html = `<div class="col">
+                        let img = rows[i]['img_src']
+                        let addr = '/static/'+img
+                        let temp_html = ``
+                        if (img == null){
+                            temp_html = `<div class="col">
                                             <div class="card">
-                                                <img src="" class="card-img-top" alt="...">
+                                                <img src="/static/museum-art.png" class="card-img-top" alt="...">
                                                 <div class="card-body">
                                                     <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
                                                     <p class="card-text">${muse_address}</p>
                                                 </div>
                                             </div>
                                         </div>`
+                        }else {
+                            temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${addr}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        }
                         $('#myCards').append(temp_html)
                     }
                 }
@@ -201,15 +217,30 @@
                         let muse_address = rows[i]['addr']
                         let muse_type = rows[i]['type']
                         let index = rows[i]['index']
-                        let temp_html = `<div class="col">
-                                        <div class="card">
-                                            <img src="" class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-                                                <p class="card-text">${muse_address}</p>
+                        let img = rows[i]['img_src']
+                        let addr = '/static/'+img
+                        let temp_html = ``
+                        if (img == null){
+                            temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="/static/museum-art.png" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>`
+                                        </div>`
+                        }else {
+                            temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${addr}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        }
                         $('#myCards').append(temp_html)
                     }
                 }
@@ -235,30 +266,48 @@
                         let muse_address = rows[i]['addr']
                         let muse_type = rows[i]['type']
                         let index = rows[i]['index']
-                        let temp_html = `<div class="col">
-                                        <div class="card">
-                                            <img src="" class="card-img-top" alt="...">
-                                            <div class="card-body">
-                                                <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
-                                                <p class="card-text">${muse_address}</p>
+                        let img = rows[i]['img_src']
+                        let addr = '/static/'+img
+                        let temp_html = ``
+                        if (img == null){
+                            temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="/static/museum-art.png" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>`
+                                        </div>`
+                        }else {
+                            temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${addr}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        }
                         $('#myCards').append(temp_html)
                     }
                 }
             })
         }
-    function open_search() {
-        $('.searchBox').slideToggle();
-    }
-    function enter_search(event) {
-        let key = event.key;
-        if (key == 'Enter') {
-            searching();
+        //search box 열기/닫기
+        function open_search() {
+            $('.searchBox').slideToggle();
         }
-    }
-    $(function () {
+        // 키 이벤트 처리
+        function enter_search(event) {
+            let key = event.key;
+            if (key == 'Enter') {
+                searching();
+            }
+        }
+        //topBtn
+        $(function () {
             $(window).scroll(function () {
                 if ($(this).scrollTop() > 250) { //250 넘으면 버튼이 보여집니다.
                     $('#topBtn').fadeIn();
@@ -274,115 +323,130 @@
             });
         });
 
-    function logout(){
-        // 로그아웃시 쿠키 삭제 구현
-        $.removeCookie('acc_token', { path: '/' })
-        $.removeCookie('ref_token', { path: '/' })
-        window.location.reload()
-    }
-    function more_btn(){
-        let cnt = document.getElementsByClassName('card-body').length
-        if (cnt == search_data.length){ return } // 클래스네임 card-body의 갯수와 검색데이터의 숫자가 같다면 모두 검색 되었으므로, 더 이상 진행할 필요가 없습니다. return은 메소드를 종료시킵니다.
-        let start = cnt // 검색을 시작할 인덱스
-        let end = cnt + 30 // 검색을 종료할 인덱스
-        let more_data = search_data.slice(start, end) // 클라이언트의 전역변수에 저장된 검색 결과들을 30개 단위로 잘라 배열로 만듭니다. 시행결과, 30개가 안되더라도 그 이하까지 자동으로 잘라오니 오류는 없습니다.
-        for (let i = 0; i < more_data.length; i++) {
-            let muse_name = more_data[i]['name']
-            let muse_address = more_data[i]['addr']
-            let muse_type = more_data[i]['type']
-            let index = more_data[i]['index']
-            let temp_html = `<div class="col">
+        function logout(){
+            // 로그아웃시 쿠키 삭제 구현
+            $.removeCookie('acc_token', { path: '/' })
+            $.removeCookie('ref_token', { path: '/' })
+            window.location.reload()
+        }
+        function more_btn(){
+            let cnt = document.getElementsByClassName('card-body').length
+            if (cnt == search_data.length){ return } // 클래스네임 card-body의 갯수와 검색데이터의 숫자가 같다면 모두 검색 되었으므로, 더 이상 진행할 필요가 없습니다. return은 메소드를 종료시킵니다.
+            let start = cnt // 검색을 시작할 인덱스
+            let end = cnt + 30 // 검색을 종료할 인덱스
+            let more_data = search_data.slice(start, end) // 클라이언트의 전역변수에 저장된 검색 결과들을 30개 단위로 잘라 배열로 만듭니다. 시행결과, 30개가 안되더라도 그 이하까지 자동으로 잘라오니 오류는 없습니다.
+            for (let i = 0; i < more_data.length; i++) {
+                let muse_name = more_data[i]['name']
+                let muse_address = more_data[i]['addr']
+                let muse_type = more_data[i]['type']
+                let index = more_data[i]['index']
+                let img = more_data[i]['img_src']
+                let addr = '/static/'+img
+                let temp_html = ``
+                if (img == null){
+                    temp_html = `<div class="col">
                                             <div class="card">
-                                                <img src="" class="card-img-top" alt="...">
+                                                <img src="/static/museum-art.png" class="card-img-top" alt="...">
                                                 <div class="card-body">
                                                     <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
                                                     <p class="card-text">${muse_address}</p>
                                                 </div>
                                             </div>
                                         </div>`
-            $('#myCards').append(temp_html)
+                }else {
+                    temp_html = `<div class="col">
+                                            <div class="card">
+                                                <img src="${addr}" class="card-img-top" alt="...">
+                                                <div class="card-body">
+                                                    <a href="/detail/mm_no/${index}"><h5 data-type="${muse_type}" class="card-title">${muse_name}</h5></a>
+                                                    <p class="card-text">${muse_address}</p>
+                                                </div>
+                                            </div>
+                                        </div>`
+                }
+                $('#myCards').append(temp_html)
+            }
         }
-    }
-    $(".downBtn").click(function(){
-        $('html, body').animate({scrollTop:($('body').height())}, 200);
-    });
+        $(".downBtn").click(function(){
+            $('html, body').animate({scrollTop:($('body').height())}, 200);
+        });
 
     </script>
 </head>
 <body>
-    <div id="wrap">
-        <div class="header">
-            <h1><a href="/">MUMA</a></h1>
-            {{head|safe}}
-        </div>
-        <div class="searchBox">
-            <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
-                <input id="searchText" onkeyup="enter_search(event)" type="text" class="form-control" placeholder="검색어를 입력해주세요"
-                       aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
-                <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
-            </div>
-        </div>
-        <div class="titleBox">
-            <p class="myTitle">MUMA</p>
-            <p class="myDetail">박물관 마스터들(MUseum MAsters)을 위한 박물관 정보를 공유합니다. </p>
-        </div>
-        <div class="mySelector">
-            <select id="muse_type" class="form-select" aria-label="Default select example">
-                <option value="타입전체" selected>국공립/사립/대학(전체)</option>
-                <option value="국공립">국공립</option>
-                <option value="사립">사립</option>
-                <option value="대학">대학</option>
-            </select>
-            <select class="form-select" id="muse_art" aria-label="Default select example">
-                <option value="박물관전체" selected>미술관/박물관(전체)</option>
-                <option value="미술관">미술관</option>
-                <option value="박물관">박물관</option>
-            </select>
-            <select class="form-select" id="muse_area" aria-label="Example select with button addon">
-                <option value="지역전체" selected>지역(전체)</option>
-                <option value="서울">서울특별시</option>
-                <option value="부산">부산광역시</option>
-                <option value="대구">대구광역시</option>
-                <option value="인천">인천광역시</option>
-                <option value="광주">광주광역시</option>
-                <option value="대전">대전광역시</option>
-                <option value="울산">울산광역시</option>
-                <option value="경기도">경기도</option>
-                <option value="강원도">강원도</option>
-                <option value="충청북도">충청북도</option>
-                <option value="충청남도">충청남도</option>
-                <option value="전라북도">전라북도</option>
-                <option value="전라남도">전라남도</option>
-                <option value="경상북도">경상북도</option>
-                <option value="경상남도">경상남도</option>
-                <option value="제주도">제주특별자치도</option>
-            </select>
-            <button onclick="filtering()" id="selectBtn" type="button" class="btn btn-outline-dark">검색</button>
-        </div>
-        <div class="cardBox">
-            <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
-
-            </div>
-        </div>
-        <div style="text-align: center">
-            <button style="width: 300px" type="button" class="btn btn-warning" onclick="more_btn()">더보기</button>
-        </div>
-        <!--footer-->
-        <footer class="footer">
-            <div>
-                <hr>
-                <p class="footer-title">
-                    MUMA
-                </p>
-                <p class="footer-detail">
-                    Designed by 항해99 6기 8조
-                </p>
-                <p class="footer-member">
-                    김재중 노현정 박예슬 황석준
-                </p>
-            </div>
-        </footer>
-        <a id="topBtn" href="#"><button type="button" class="btn btn-warning">top</button></a>
+<div id="wrap">
+    <div class="header">
+        <h1><a href="/">MUMA</a></h1>
+        {{head|safe}}
     </div>
+    <div class="searchBox">
+        <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
+            <input id="searchText" onkeyup="enter_search(event)" type="text" class="form-control" placeholder="검색어를 입력해주세요"
+                   aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
+            <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+        </div>
+    </div>
+    <div class="titleBox">
+        <p class="myTitle">MUMA</p>
+        <p class="myDetail">박물관 마스터들(MUseum MAsters)을 위한 박물관 정보를 공유합니다. </p>
+    </div>
+    <div class="mySelector">
+        <select id="muse_type" class="form-select" aria-label="Default select example">
+            <option value="타입전체" selected>국공립/사립/대학(전체)</option>
+            <option value="국공립">국공립</option>
+            <option value="사립">사립</option>
+            <option value="대학">대학</option>
+        </select>
+        <select class="form-select" id="muse_art" aria-label="Default select example">
+            <option value="박물관전체" selected>미술관/박물관(전체)</option>
+            <option value="미술관">미술관</option>
+            <option value="박물관">박물관</option>
+        </select>
+        <select class="form-select" id="muse_area" aria-label="Example select with button addon">
+            <option value="지역전체" selected>지역(전체)</option>
+            <option value="서울">서울특별시</option>
+            <option value="부산">부산광역시</option>
+            <option value="대구">대구광역시</option>
+            <option value="인천">인천광역시</option>
+            <option value="광주">광주광역시</option>
+            <option value="대전">대전광역시</option>
+            <option value="울산">울산광역시</option>
+            <option value="경기도">경기도</option>
+            <option value="강원도">강원도</option>
+            <option value="충청북도">충청북도</option>
+            <option value="충청남도">충청남도</option>
+            <option value="전라북도">전라북도</option>
+            <option value="전라남도">전라남도</option>
+            <option value="경상북도">경상북도</option>
+            <option value="경상남도">경상남도</option>
+            <option value="제주도">제주특별자치도</option>
+        </select>
+        <button onclick="filtering()" id="selectBtn" type="button" class="btn btn-outline-dark">검색</button>
+    </div>
+    <div class="cardBox">
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
+
+        </div>
+    </div>
+    <div style="text-align: center">
+        <button style="width: 300px" type="button" class="btn btn-warning" onclick="more_btn()">더보기</button>
+    </div>
+    <!--footer-->
+    <footer class="footer">
+        <div>
+            <hr>
+            <p class="footer-title">
+                MUMA
+            </p>
+            <p class="footer-detail">
+                Designed by 항해99 6기 8조
+            </p>
+            <p class="footer-member">
+                김재중 노현정 박예슬 황석준
+            </p>
+        </div>
+    </footer>
+    <a id="topBtn" href="#"><button type="button" class="btn btn-warning">top</button></a>
+</div>
 </body>
 </html>

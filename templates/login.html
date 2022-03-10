@@ -137,6 +137,7 @@
         function login() {
             let id = $('#id').val()
             let pw = $('#pw').val()
+            if ( (id == '') || (pw == '') ){alert('아이디와 비밀번호를 입력해 주세요!');return} // 서버 부담을 줄이기 위해 간단히 1차 검증작업을 합니다.
             let chk_save = false
             let chk_keep = false
             if ($('#flexCheckSaveId').is(":checked")) { chk_save = true } // 로그인 유지 기능을 구현하기 위해 필요합니다.

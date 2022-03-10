@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, url_for
 import hashlib
 from pymongo import MongoClient
 import config # config는 로컬 환경에서는 사용되지 않으므로 지워주셔도 괜찮습니다.
@@ -7,10 +7,11 @@ import jwt
 import datetime
 import requests
 from datetime import datetime, timedelta
+import os
 
 ####### 주의!!! #######
 #사용한 라이브러리는 flask, pymongo, dnspython, requests 입니다. 설치하시고 실행해 주세요.
-#확인결과, 서버에서는 jwt 암호화를 해준 함수들을 UTF-8로 복호화 시켜줘야 작동하는데, 로컬에서는 이상하게도 복호화 시켜주지 않아야 잘 작동합니다.
+#확인결과, 서버에서는 jwt 암호화를 해준 값들을 UTF-8로 복호화 시켜줘야 작동하는데, 로컬에서는 이상하게도 복호화 시켜주지 않아야 잘 작동합니다.
 #따라서, 제가 서버에 올리는 app.py와 로컬에서 돌리는 app.py가 조금 다르다는 것을 참조해 주셨으면 합니다.
 ######################
 
@@ -19,6 +20,26 @@ client = MongoClient(config.mongoDB) # 각자의 몽고DB와 연동해 주세요
 db = client.dbsparta
 SECRET_KEY = config.secret_key # config 처리 해줘야 합니다. 깃허브에서는 숨겨둡니다.
 KEY_SECRET = config.key_secret # 저는 리프레시 토큰과 액세스 토큰의 암호화 코드를 각각 달리 지정해 줬습니다. 사용하시려면 두 암호에 아무 문자열이나 입력해주세요.
+
+def create_imgfold(index):
+    try:
+        dir = 'static/'+index
+        os.mkdir(dir)
+        return
+    except:
+        return
+
+def del_img(index):
+    dir = 'static/' + index
+    try:
+        if os.path.exists(dir):
+            for file in os.scandir(dir):
+                os.remove(file.dir)
+            return
+        else:
+            return
+    except:
+        return
 
 @app.route('/')
 def main():
@@ -105,6 +126,7 @@ def join():
         except:  # ref_token이 발급되지 않은 상태라면 회원가입 페이지로 렌더링합니다.
             return render_template('join.html')
 
+    #   필터 기능
 @app.route("/muse_select", methods=["GET"])
 def muse_select():
     doc = []  # 검색을 마친 자료가 들어갈 배열입니다.
@@ -113,31 +135,57 @@ def muse_select():
     area_receive = request.args.get("area_give")
 
     museums = list(db.muse_info.find({}, {'_id': False}))  # 박물관의 전체 목록을 museums 변수로 받아옵니다.
+
     if builder_receive == '국공립':
         for museum in museums:
             if museum["type"] == '국립' or museum["type"] == '공립':
                 if type_receive == '박물관전체':
                     if area_receive == '지역전체':
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                 elif type_receive in museum['name']:
                     if area_receive == '지역전체':
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
+
     elif builder_receive == '타입전체':
         for museum in museums:
             if type_receive == '박물관전체':
                 if area_receive == '지역전체':
                     doc.append(museum)
+                    index = museum['index']
+                    img = db.mimgs.find_one({'mm_no': index})
+                    doc.append(img)
                 elif area_receive in museum['addr']:
                     doc.append(museum)
+                    index = museum['index']
+                    img = db.mimgs.find_one({'mm_no': index})
+                    doc.append(img)
             elif type_receive in museum['name']:
                 if area_receive == '지역전체':
                     doc.append(museum)
+                    index = museum['index']
+                    img = db.mimgs.find_one({'mm_no': index})
+                    doc.append(img)
                 elif area_receive in museum['addr']:
                     doc.append(museum)
+                    index = museum['index']
+                    img = db.mimgs.find_one({'mm_no': index})
+                    doc.append(img)
 
     else:
         for museum in museums:
@@ -145,34 +193,48 @@ def muse_select():
                 if type_receive == '박물관전체': #str.contains('박물관')
                     if area_receive == '지역전체':
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                 elif type_receive in museum['name']:
                     if area_receive == '지역전체':
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
                     elif area_receive in museum['addr']:
                         doc.append(museum)
+                        index = museum['index']
+                        img = db.mimgs.find_one({'mm_no': index})
+                        doc.append(img)
 
     return jsonify({'filter_list': doc, 'msg': '검색완료!'})
 
-    # 검색 기능
+#   검색 기능
 @app.route("/muse_search", methods=["GET"])
-def muse_search():
+def muse_filter():
     doc = []
     text_receive = request.args.get("text_give")
     museums = list(db.muse_info.find({}, {'_id': False}))
     for museum in museums:
         if text_receive in museum['name']:
             doc.append(museum)
-    return jsonify({'search_list' : doc, 'msg': '검색 완료!'})
+    return jsonify({'search_list': doc, 'msg': '검색 완료!'})
 
 # detailpg.html로 연결하면서 해당박물관 데이터를 전송
 @app.route('/detail/mm_no/<index>')
 def detail(index):
-    mm_no = index
     index = int(index)
     museum = db.muse_info.find_one({'index': index})
-    img = db.mimgs.find_one({'mm_no': mm_no})
+    imgs = list(db.muse_imgs.find({'mm_no': index}))
+    img = []
+    for img in imgs:    # 가장 나중에 넣은 사진을 가져오게 하기
+        img = img
     # 지도 주소 위도, 경도로 변환 : x, y 값
     headers = {
         "X-NCP-APIGW-API-KEY-ID": "afrl6tl1y2",
@@ -190,28 +252,28 @@ def detail(index):
 
     return render_template('detail.html', museum = museum, img=img, addr_x = x, addr_y = y)
 
-@app.route('/saveimg', methods=['POST'])
-def saveimg():
+@app.route('/save_img', methods=['POST'])
+def save_img():
+    img = 'img'
     mmnum_receive = request.form["mmnum_give"]
     file = request.files["file_give"]
+    create_imgfold(mmnum_receive) # 인덱스명에 맞는 폴더 만들기를 시도합니다.
+    del_img(mmnum_receive) # 인덱스명에 맞는 폴더 내부의 파일 삭제를 시도합니다.
 
-    extension = file.filename.split('.')[-1]
+    mm_no = int(mmnum_receive)      # 나중에 동일한 방식으로 index 이용하기 위해 숫자변환
 
     today = datetime.now()
-    mytime = today.strftime('%Y-%m-%d-%H-%M-%S')
+    extension = file.filename.split('.')[-1]
 
-    filename = f'file-{mytime}'
-    save_to = f'static/{filename}.{extension}'
-    file.save(save_to)
+    filename = f'{img}'
+    index = f'{mmnum_receive}'
+    save_to = f'static/{index}/{filename}.{extension}'
+    file.save(save_to) # static/<index> 폴더 안에 img.확장자로 이미지를 저장힙니다.
 
-    doc = {
-        'mm_no': mmnum_receive,
-        'file': f'{filename}.{extension}'
-    }
+    dir = mmnum_receive + '/' + filename + '.' + extension
 
-    db.mimgs.insert_one(doc)
-
-    return jsonify({'msg': '저장 완료!'})
+    db.muse_info.update_one({'index': mm_no}, {'$set': {'img_src': dir}})
+    return jsonify({'msg': '사진 등록 완료!'})
 
 
 @app.route('/posting', methods=['POST'])
@@ -249,9 +311,6 @@ def delete():
         if str(post["_id"]) == post_id_receive:
             db.posts.delete_one({"_id":post["_id"]})
     return jsonify({'result': 'success', 'msg': 'deleted'})
-
-# @app.route('/delete_post', methods=['DELETE'])
-# def delete_post():
 
 @app.route("/muse_info", methods=["GET"])
 def muse_get():
