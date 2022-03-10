@@ -11,3 +11,14 @@ tag_g = "<button style='border: 0px' onclick='logout()' type='button' class='btn
 
 cur_st_logout = tag_a + "\n" + tag_b + "\n" + tag_c + "\n" + tag_d + "\n" + tag_e
 cur_st_login = tag_a + "\n" + tag_b + "\n" + tag_f + "\n" + tag_g + "\n" + tag_e
+
+a_detail_pg = "<div class='mystar'>"
+b_detail_pg = "<select class='form-select' id='inputGroupSelect01' aria-label='Default select example'><option selected>별점주기</option><option value='5'>⭐⭐⭐⭐⭐</option><option value='4'>⭐⭐⭐⭐</option><option value='3'>⭐⭐⭐</option><option value='2'>⭐⭐</option><option value='1'>⭐</option></select></div><div class='input-group mb-3'><input type='text' class='form-control' id='textarea-post' placeholder='의견을 자유롭게 적어주세요.' aria-label='Recipient's username' aria-describedby='button-addon3'><button class='btn btn-outline-secondary' type='button' id='button-addon3' onclick='post()'>입력</button></div>"
+c_detail_pg = "</div>"
+d_detail_pg = "<div><p>죄송해요! 글쓰기와 대표 이미지 업로드는 회원만 할 수 있어요!</p></div>"
+
+current_login = a_detail_pg + '\n' + b_detail_pg + '\n' + c_detail_pg
+current_logout = a_detail_pg + '\n' + d_detail_pg + '\n' + c_detail_pg
+
+img_login = "<input type='file' class='form-control' id='inputGroupFile04' aria-describedby='inputGroupFileAddon04' aria-label='Upload'><button class='btn btn-outline-secondary' type='button' id='inputGroupFileAddon04' onclick='save_img()'>사진 등록</button>"
+img_logout = ""

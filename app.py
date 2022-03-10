@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify
 import hashlib
 from pymongo import MongoClient
 import config # config는 로컬 환경에서는 사용되지 않으므로 지워주셔도 괜찮습니다.
@@ -10,9 +10,9 @@ from datetime import datetime, timedelta
 import os
 
 ####### 주의!!! #######
-#사용한 라이브러리는 flask, pymongo, dnspython, requests 입니다. 설치하시고 실행해 주세요.
+#사용한 라이브러리는 flask, pymongo, dnspython, requests, PyJWT 입니다. 설치하시고 실행해 주세요.
 #확인결과, 서버에서는 jwt 암호화를 해준 값들을 UTF-8로 복호화 시켜줘야 작동하는데, 로컬에서는 이상하게도 복호화 시켜주지 않아야 잘 작동합니다.
-#따라서, 제가 서버에 올리는 app.py와 로컬에서 돌리는 app.py가 조금 다르다는 것을 참조해 주셨으면 합니다.
+#따라서, 제가 서버에 올리는 app.py와 로컬에서 돌리는 app.py가 조금 다르다는 것을 참조해 주셨으면 합니다. 깃에 올라가는 자료는 로컬 환경에서 돌아가도록 했습니다.
 ######################
 
 app = Flask(__name__)
@@ -46,7 +46,7 @@ def main():
     acc_token_receive = request.cookies.get('acc_token')
     # try~ catch나 try~ except 같은 예외처리문은 실제로도 쓰인다고 하니 참고로 알아두면 좋겠습니다. if ~ else 와 비슷하지만, 에러코드가 나도 작동하도록 설계된 문법입니다.
     try:
-        payload = jwt.decode(acc_token_receive, SECRET_KEY, algorithms=['HS256']) # 이 코드에서 acc 토큰의 디코딩을 시도합니다. 디코딩할 문자열이 없다면 예외처리됩니다. 가능하다면 로그인이 된 페이지를 렌더링할 것입니다.
+        payload = jwt.decode(acc_token_receive, SECRET_KEY, algorithms=['HS256']) # 이 코드에서 acc 토큰의 디코딩을 시도합니다. 디코딩할 문자열이 없다면 예외처리됩니다. 디코딩이 가능하다면 로그인이 된 페이지를 렌더링할 것입니다.
         return render_template('index.html', head = renderTag.cur_st_login)
 
     except jwt.ExpiredSignatureError: # 인증키의 시간이 만료되었음을 의미합니다. ref_token이 있다면, 다시 발급하는 절차를 거칩니다.
@@ -64,7 +64,7 @@ def main():
             ref_token_receive = request.cookies.get('ref_token')
             payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
             payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
-            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256') # ACCESS TOKEN 생성
             return render_template('index.html', head=renderTag.cur_st_login, acc_token=acc_token)
         except:  # ref_token이 발급되지 않은 상태라면 로그인 되지 않은 화면으로 렌더링합니다.
             return render_template('index.html', head=renderTag.cur_st_logout)
@@ -229,18 +229,16 @@ def muse_filter():
 # detailpg.html로 연결하면서 해당박물관 데이터를 전송
 @app.route('/detail/mm_no/<index>')
 def detail(index):
+    acc_token_receive = request.cookies.get('acc_token')
     index = int(index)
     museum = db.muse_info.find_one({'index': index})
-    imgs = list(db.muse_imgs.find({'mm_no': index}))
-    img = []
-    for img in imgs:    # 가장 나중에 넣은 사진을 가져오게 하기
-        img = img
     # 지도 주소 위도, 경도로 변환 : x, y 값
     headers = {
         "X-NCP-APIGW-API-KEY-ID": "afrl6tl1y2",
         "X-NCP-APIGW-API-KEY": "CwhCBEw4LafFurJ2juls3RMtmVy8yYmkXS4fMNTV"
     }
-    r = requests.get(f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={museum['addr']}", headers=headers)
+    r = requests.get(f"https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query={museum['addr']}",
+                     headers=headers)
     response = r.json()
     # 지도 주소 정보를 찾을 수 없을때 예외 처리
     if response["status"] == "OK":
@@ -249,8 +247,30 @@ def detail(index):
             y = float(response["addresses"][0]["y"])
         else:
             print("좌표를 찾지 못했습니다")
+    # try~ catch나 try~ except 같은 예외처리문은 실제로도 쓰인다고 하니 참고로 알아두면 좋겠습니다. if ~ else 와 비슷하지만, 에러코드가 나도 작동하도록 설계된 문법입니다.
+    try:
+        payload = jwt.decode(acc_token_receive, SECRET_KEY, algorithms=['HS256'])  # 이 코드에서 acc 토큰의 디코딩을 시도합니다. 디코딩할 문자열이 없다면 예외처리됩니다. 가능하다면 로그인이 된 페이지를 렌더링할 것입니다.
+        return render_template('detail.html', head=renderTag.cur_st_login, museum=museum, addr_x=x, addr_y=y, comment=renderTag.current_login, img_u=renderTag.img_login)
 
-    return render_template('detail.html', museum = museum, img=img, addr_x = x, addr_y = y)
+    except jwt.ExpiredSignatureError:  # 인증키의 시간이 만료되었음을 의미합니다. ref_token이 있다면, 다시 발급하는 절차를 거칩니다.
+        try:
+            ref_token_receive = request.cookies.get('ref_token')
+            payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            return render_template('detail.html', head=renderTag.cur_st_login, museum=museum, addr_x=x, addr_y=y, comment=renderTag.current_login, acc_token=acc_token, img_u=renderTag.img_login)
+        except:  # ref_token이 발급되지 않은 상태라면 로그인 되지 않은 화면으로 렌더링합니다.
+            return render_template('detail.html', head=renderTag.cur_st_logout, museum=museum, addr_x=x, addr_y=y, comment=renderTag.current_logout, img_u=renderTag.img_logout)
+
+    except jwt.exceptions.DecodeError:  # 디코딩을 시도할수 없다는 뜻입니다. 어떤 이유로 acc_token 자체가 파괴되었거나, 회원 정보가 일치하지 않는다는 뜻입니다.
+        try:  # 마찬가지로 똑같은 절차를 밟습니다.
+            ref_token_receive = request.cookies.get('ref_token')
+            payload = jwt.decode(ref_token_receive, KEY_SECRET, algorithms=['HS256'])
+            payload['exp'] = datetime.utcnow() + timedelta(seconds=60 * 15)
+            acc_token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')  # ACCESS TOKEN 생성
+            return render_template('detail.html', head=renderTag.cur_st_login, museum=museum, addr_x=x, addr_y=y, comment=renderTag.current_login, acc_token=acc_token, img_u=renderTag.img_login)
+        except:  # ref_token이 발급되지 않은 상태라면 로그인 되지 않은 화면으로 렌더링합니다.
+            return render_template('detail.html', head=renderTag.cur_st_logout, museum=museum, addr_x=x, addr_y=y, comment=renderTag.current_logout, img_u=renderTag.img_logout)
 
 @app.route('/save_img', methods=['POST'])
 def save_img():
@@ -262,7 +282,6 @@ def save_img():
 
     mm_no = int(mmnum_receive)      # 나중에 동일한 방식으로 index 이용하기 위해 숫자변환
 
-    today = datetime.now()
     extension = file.filename.split('.')[-1]
 
     filename = f'{img}'

@@ -5,30 +5,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-<!--    og 태그-->
-    <meta property="og:title" content="MUMA(Museum Masters)" />
-    <meta property="og:description" content="뮤지엄 마스터들을 위한 박물관에 대한 정보를 공유하고 후기를 남기는 공간입니다." />
-    <meta property="og:image" content="{{ url_for('static', filename='museum-art.png') }}" />
+    <!--    og 태그-->
+    <meta property="og:title" content="MUMA(Museum Masters)"/>
+    <meta property="og:description" content="뮤지엄 마스터들을 위한 박물관에 대한 정보를 공유하고 후기를 남기는 공간입니다."/>
+    <meta property="og:image" content="{{ url_for('static', filename='museum-art.png') }}"/>
 
-<!--    파비콘 연결-->
+    <!--    파비콘 연결-->
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
+<!--    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 
-<!--    네이버 지도 api -->
+    <!--    네이버 지도 api -->
     <script type="text/javascript"
             src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=afrl6tl1y2"></script>
     <script src=" https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-<!--    탭에 페이지에 해당하는 박물관 이름 뜨게하기-->
+    <!--    탭에 페이지에 해당하는 박물관 이름 뜨게하기-->
     <title>MUMA | {{ museum.name}} </title>
 
 
@@ -38,13 +40,15 @@
             font-size: 16px;
             font-weight: 400;
             line-height: 1.2;
-            font-family: 'Nanum Gothic', sans-serif;
+            font-family: 'Noto Sans KR', sans-serif;
             color: #333333;
         }
-        hr {
-            width: 100%;
-            max-width: 800px;
-        }
+        /*.body-wrap {*/
+        /*    !*padding: 15px;*!*/
+        /*    background-color: whitesmoke;*/
+
+        /*}*/
+
         #map {
             width: 100%;
             max-width: 800px;
@@ -55,81 +59,67 @@
         }
 
         /*HEADER*/
-        .mytitle {
-            background-color: whitesmoke;
-            font-size: 14px;
-        }
-        .mytitle .inner {
+        .header {
             width: 100%;
-            max-width: 800px;
-            height: 80px;
-            margin: 0 auto;
-            position: relative;
-        }
-        .mytitle .logo {
-            height: 40px;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            margin: auto;
-            font-size: 24px;
-            color: #333333;
-            text-decoration: none;
-        }
-        .mytitle .sub-menu {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            margin: auto;
-            height: 40px;
-            display: flex;
-            flex-direction: row;
-        }
-        .mytitle .sub-menu .search input {
-            width: 200px;
-            height: 40px;
-            padding: 2px 10px;
-            border-radius: 5px;
-            outline: none;
+            height: 60px;
             background-color: white;
-            color: gray;
-            font-size: 14px;
-            border: 1px solid #b0b0b0;
-        }
-        .mytitle .sub-menu .search .search-btn {
-            width: 100px;
-            height: 40px;
-
-            background-color: #0066cc;
-            color: white;
-            border-radius: 5px;
-            border: 1px solid #0066cc;
-        }
-        .mytitle .sub-menu .search .search-btn:hover {
-            background-color: #333333;
-            border: 1px solid #333333;
-        }
-        .mytitle .sub-menu .logout-btn {
-            width: 100px;
-            height: 40px;
-
-            margin-left: 3px;
-            background-color: #b0b0b0;
-            color: white;
-            border-radius: 5px;
-            border: 1px solid #b0b0b0;
-        }
-        .mytitle .sub-menu .logout-btn:hover {
-            background-color: #333333;
+            border-bottom: 1px solid lightgray;
         }
 
+        .header h1 {
+            display: inline;
+            margin: 20px 0 0 20px;
+            color: darkgrey;
+        }
+
+        a {
+            text-decoration: none;
+            color: #333333;
+        }
+
+        .headerBtn {
+            float: right;
+            margin: 10px 20px 0px 0px;
+        }
+
+        .headerBtn > a > button {
+            border-color: transparent;
+            background-color: transparent;
+        }
+
+        .headerBtn > button {
+            border-color: transparent;
+            background-color: transparent;
+        }
+
+        .searchBox {
+            width: 100%;
+            height: 80px;
+            background-color: white;
+            display: none;
+        }
+
+        #searchInnerBox {
+            margin: 20px auto 0px auto;
+        }
+
+        .cardBox {
+            background-color: whitesmoke;
+        }
+
+        #muse_area {
+            width: 150px;
+        }
+
+        #selectBtn {
+            margin: auto 0px auto 10px;
+        }
 
         /*MAIN DB SHOW*/
         .showdb {
             margin-top: 50px
         }
+
         .showdb .dbinfo {
             width: 100%;
             max-width: 800px;
@@ -137,6 +127,7 @@
             display: flex;
             flex-direction: row;
         }
+
         .showdb .dbinfo .dbimg img {
             background-color: orange;
             width: 100%;
@@ -154,14 +145,17 @@
             padding-left: 35px;
             flex-grow: 1;
         }
+
         .showdb .dbinfo .dbmain .db-head {
             display: flex;
             flex-direction: row;
             margin-bottom: 10px;
         }
+
         .showdb .dbinfo .dbmain .info_head {
             font-weight: 700;
         }
+
         .showdb .dbinfo .dbmain .type {
             color: #0066cc;
             font-size: 16px;
@@ -170,16 +164,18 @@
             margin-top: 5px;
             margin-left: 15px;
         }
+
         .showdb .dbinfo .dbmain .name {
             font-size: 24px;
             font-weight: 700;
         }
+
         .showdb .dbinfo .dbmain .db-intro {
             line-height: 1.6;
         }
 
         .showdb .dbinfo .dbmain .show_map {
-            text-decoration : none;
+            text-decoration: none;
         }
 
         .showdb .dbinfo .dbmain .input-group {
@@ -205,25 +201,30 @@
             align-items: center;
             position: relative;
         }
+
         .mycomment .mystar .form-select {
             color: gray;
             outline: none;
             box-shadow: none;
             width: 150px;
         }
+
         .mycomment .input-group {
             margin-top: 16px;
             margin-left: 10px;
         }
+
         .mycomment .input-group .form-control {
             outline: none;
             box-shadow: none;
         }
+
         .mycomment .input-group .btn-outline-secondary {
             border: 1px solid lightgray;
             outline: none;
             box-shadow: none;
         }
+
         .mycomment .input-group .btn-outline-secondary:hover {
             background-color: #333333;
             border: 1px solid #333333;
@@ -234,41 +235,86 @@
             max-width: 800px;
             margin: auto;
         }
+        .comment-list hr {
+            width: 100%;
+            max-width: 800px;
+        }
+
         .comment-list .comment {
             display: flex;
             flex-direction: row;
         }
+
         .comment-list .comment-item {
             margin-right: 20px;
         }
+
         .comment-list .comment-item.star {
             width: 150px;
         }
+
         .comment-list .comment-item.text {
             flex-grow: 1;
         }
+
         #score_average {
             width: 800px;
             height: 50px;
             margin: auto;
         }
 
+
+        /*footer*/
+        footer {
+            max-width: 1500px;
+            width: 95%;
+            height: 150px;
+            position: relative;
+            padding: 10px 0px 20px 50px;
+            margin-bottom: 20px;
+        }
+
+        .footer-title {
+            font-size: 150%;
+            color: grey;
+        }
+
+        .footer-detail {
+            color: darkgrey;
+        }
+
+        .footer-member {
+            color: grey;
+            font-size: 0.8em;
+        }
+
+
     </style>
     <script>
-
         let map_count = 0
         $(document).ready(function () {
+            chk_token() // 홈페이지가 렌더링됨과 동시에 새로 발급받은 토큰 데이터를 불러옵니다.
+            // console.log(search_data)
             // 댓글 보여주기
             get_posts()
             // map 보여주기, 지도를 그려는 주는데, 현재 지도 display:none 상태로 처음엔 안보이게 하기
             get_map()
         });
 
+        function chk_token() {
+            let token = '{{acc_token}}'
+            if (token == '') {
+            } // 토큰의 데이터가 없다면 토큰을 만들지 않습니다.
+            else {
+                $.cookie('acc_token', token, {path: '/'})
+            } // ref_token이 있어서 새 토큰을 발급받은 경우는 토큰을 만들어 줍니다.
+        }
+
         function hey_map() {        // 맵을 불러와서 보여주거나, 숨긴다
             if (map_count == 0) {   // script 처음에서 선언해준 map_cout 이용, 클릭수에 따라, 0일때 보여주고, 1일때 숨기게
                 $('#map').show()
                 map_count += 1
-            }else {
+            } else {
                 $('#map').hide()
                 map_count -= 1
             }
@@ -292,6 +338,40 @@
             });
         }
 
+        function open_search() {
+            $('.searchBox').slideToggle();
+        }
+
+        function enter_search(event) {
+            let key = event.key;
+            if (key == 'Enter') {
+                searching();
+            }
+        }
+
+        $(function () {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 250) { //250 넘으면 버튼이 보여집니다.
+                    $('#topBtn').fadeIn();
+                } else {
+                    $('#topBtn').fadeOut();
+                }
+            }); // 버튼 클릭시
+            $("#topBtn").click(function () {
+                $('html, body').animate({
+                    scrollTop: 0 // 0 까지 animation 이동합니다.
+                }, 400); // 속도 400
+                return false;
+            });
+        });
+
+        function logout() {
+            // 로그아웃시 쿠키 삭제 구현
+            $.removeCookie('acc_token', {path: '/'})
+            $.removeCookie('ref_token', {path: '/'})
+            window.location.reload()
+        }
+
         function save_img() {
             let test = $('#inputGroupFile04').val()
             console.log(test)
@@ -301,6 +381,7 @@
                 return
             } else {
                 let mm_no = '{{ museum.index }}'    // 현재페이지의 박물관 index를 사진 정보와 함께 보내기 위해 받아옴
+
                 let file = $('#inputGroupFile04')[0].files[0]
                 let form_data = new FormData()
 
@@ -327,12 +408,12 @@
             let score = $('#inputGroupSelect01').val()
             let today = new Date().toISOString()
             let name = '박예슬'
-            let mm_no = {{ museum.index|tojson }}
+            let mm_no = {{ museum.index | tojson }}
 
             if (score == '별점주기') {
                 alert('별점을 선택해주세요')
                 return
-            }else if (comment == "") {
+            } else if (comment == "") {
                 alert('내용을 작성해주세요')
                 return
             }
@@ -357,7 +438,7 @@
             $("#comment-list").empty()
             $.ajax({
                 type: "GET",
-                url: "/get_posts?num_give="+'{{museum.index}}',
+                url: "/get_posts?num_give=" + '{{museum.index}}',
                 data: {},
                 success: function (response) {
                     if (response["result"] == "success") {
@@ -368,7 +449,7 @@
                             let post = posts[i]
                             let star_image = '⭐'.repeat(post["score"])
                             score_sum += Number(post["score"])
-                            score_average = score_sum / ( i + 1 )
+                            score_average = score_sum / (i + 1)
                             let html_temp = `<div class="comment" id='${post["_id"]}'>
                                                 <div class="comment-item star">${star_image}</div>
                                                 <div class="comment-item text">${post["comment"]}</div>
@@ -385,11 +466,12 @@
                 }
             })
         }
+
         function delete_test(post_id) {
             console.log(post_id)
             $.ajax({
                 type: "POST",
-                url: "/delete?num_give="+'{{museum.index}}',
+                url: "/delete?num_give=" + '{{museum.index}}',
                 data: {
                     post_id_give: post_id,
                 },
@@ -400,44 +482,37 @@
             });
         }
 
-        function delete_post(post_id) {
-            // GET이 아닌 DELETE로 시도
-            $.ajax({
-                type: "DELETE",
-                url: "/delete_post?post_id="+post_id,
-                data: {},
-                success: function (response) {
-                    window.location.reload() // 새로고침
-                }
-            })
-        }
-
-    </script>
+        </script>
 </head>
 
 <body>
-
+<div id="wrap">
 <!--HEADER-->
-<div class="mytitle">
-    <div class="inner">
-
-        <a href="/" class="logo"><p>MUMA</p></a>
-        <div class="sub-menu">
-            <div class="search">
-                <input type="text"/>
-                <button class="search-btn">회원정보</button>
-            </div>
-            <button class="logout-btn">로그아웃</button>
-        </div>
-
+<div class="header">
+    <h1><a href="/">MUMA</a></h1>
+    {{head|safe}}
+</div>
+<div class="searchBox">
+    <div id="searchInnerBox" class="input-group mb-3" style="width: 500px">
+        <input id="searchText" onkeyup="enter_search(event)" type="text" class="form-control"
+               placeholder="검색어를 입력해주세요"
+               aria-label="검색어를 입력해주세요" aria-describedby="button-addon2">
+        <button onclick="searching()" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
     </div>
 </div>
+    <div class="cardBox">
+        <div class="row row-cols-1 row-cols-md-4 g-4" id="myCards">
+
+        </div>
+    </div>
 
 <!--MAIN DB-->
+    <div class="body-wrap">
 <div class="showdb">
     <div class="dbinfo">
+
         <div class="dbimg">     <!--페이지 열때 가져온 img db에서 값이 있을 때만, 해당 사진 보여주기, 없으면 기본 사진-->
-            {% if museum.img_src == [] %}
+            {% if museum.img_src == none %}
             <img src="/static/museum-art.png" alt="aba"/>
             {% else %}
             <img src="/static/{{ museum.img_src }}" alt="aba"/>
@@ -449,7 +524,7 @@
                 <h1 class="name">{{ museum.name }}</h1>
                 <p class="type">#{{ museum.type }}</p>
             </div>
-            <p><span class="info_head">홈페이지</span> : {{ museum.url }}</p>
+            <p><span class="info_head">홈페이지</span> : <a href="{{ museum.url }}">{{ museum.url }}</a></p>
             <p><span class="info_head">전화번호</span> : {{ museum.phone }}</p>
             <p><span class="info_head">영업시간</span> : {{ museum.open }} ~ {{ museum.close }}</p>
             <p><span class="info_head">휴무정보</span> : {{ museum.rest_info }}</p>
@@ -458,11 +533,7 @@
             <p class="db-intro">{{ museum.introduce }}</p>
 
             <div class="input-group">
-                <input type="file" class="form-control" id="inputGroupFile04"
-                       aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04" onclick="save_img()">
-                    사진 등록
-                </button>
+                {{img_u|safe}}
             </div>
         </div>
 
@@ -474,43 +545,33 @@
 
 
 <!--COMMENT-->
-<div class="mycomment">
-    <div class="mystar">
-        <select class="form-select" id="inputGroupSelect01" aria-label="Default select example">
-            <option selected>별점주기</option>
-            <option value="5">⭐⭐⭐⭐⭐</option>
-            <option value="4">⭐⭐⭐⭐</option>
-            <option value="3">⭐⭐⭐</option>
-            <option value="2">⭐⭐</option>
-            <option value="1">⭐</option>
-        </select>
-    </div>
-    <div class="input-group mb-3">
-        <input type="text" class="form-control" id="textarea-post" placeholder="의견을 자유롭게 적어주세요." aria-label="Recipient's username"
-               aria-describedby="button-addon2">
-        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="post()">입력</button>
-    </div>
-
+<div id="mycomment" class="mycomment">
+    {{comment|safe}}
 </div>
+
 <div id="score_average">
-<!--    <p>평점 ()</p>-->
+    <!--    <p>평점 ()</p>-->
 </div>
 <div class="comment-list" id="comment-list">
-    <div class="comment">
-        <div class="comment-item star">⭐⭐⭐⭐⭐</div>
-        <div class="comment-item text">코멘트etsetsetset</div>
-        <div class="comment-item name">닉네임</div>
-    </div>
-    <hr>
-    <div class="comment">
-        <div class="comment-item star">⭐⭐⭐⭐⭐</div>
-        <div class="comment-item text">코멘트etsetsetset</div>
-        <div class="comment-item name">닉네임</div>
-        <button type="button" class="btn-close" aria-label="Close"></button>
-    </div>
-    <hr>
 </div>
 
+<!--footer-->
+    <footer class="footer">
+        <div>
+            <hr>
+            <p class="footer-title">
+                MUMA
+            </p>
+            <p class="footer-detail">
+                Designed by 항해99 6기 8조
+            </p>
+            <p class="footer-member">
+                김재중 노현정 박예슬 황석준
+            </p>
+        </div>
+    </footer>
+</div>
+</div>
 </body>
 
 </html>
