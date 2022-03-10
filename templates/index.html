@@ -127,10 +127,10 @@
             font-size: 0.8em;
         }
         a#topBtn {
-            position: fixed; /* 포지션 고정 */
-            right: 2.5%; /* - %도 할수 있음*/
-            bottom: 20px; /* 밑에서 5px */
-            display: none; /* 보여지지 없음 - 기본적으로 안보여지게 */
+            position: fixed;
+            right: 2.5%; 
+            bottom: 20px;
+            display: none; 
             z-index: 9999; /* 포지션을 먼저 지정후 z-좌표(레이어) : 9999입니다. */
 
             text-decoration: none;
@@ -152,6 +152,7 @@
             if (token == ''){ } // 토큰의 데이터가 없다면 토큰을 만들지 않습니다.
             else{$.cookie('acc_token', token, {path: '/'})} // ref_token이 있어서 새 토큰을 발급받은 경우는 토큰을 만들어 줍니다.
         }
+        //최초 모든 박물관 리스트 보여줌 (30개씩 추가로 보여줌)
         function listing() {
             $.ajax({
                 type: 'GET',
@@ -170,7 +171,7 @@
                         let img = rows[i]['img_src']
                         let addr = '/static/'+img
                         let temp_html = ``
-                        if (img == null){
+                        if (img == null){ //회원이 저장한 사진 없을 경우, 기본 이미지 보여줌
                             temp_html = `<div class="col">
                                             <div class="card">
                                                 <img src="/static/museum-art.png" class="card-img-top" alt="...">
@@ -180,7 +181,7 @@
                                                 </div>
                                             </div>
                                         </div>`
-                        }else {
+                        }else { // 회원이 저장한 사진이 있을 경우, 해당 경로에 있는 이미지 보여줌
                             temp_html = `<div class="col">
                                             <div class="card">
                                                 <img src="${addr}" class="card-img-top" alt="...">
@@ -196,6 +197,8 @@
                 }
             })
         }
+        
+        //<select>에서 선택한 option에 따른 필터링 
         function filtering(){
             $('#myCards').empty()
             let muse_builder = $('#muse_type').val()
@@ -247,6 +250,8 @@
             })
 
         }
+        
+        //검색어를 통한 검색 기능
         function searching(){
             $('#myCards').empty()
             let search_txt = $('#searchText').val()
@@ -299,7 +304,7 @@
         function open_search() {
             $('.searchBox').slideToggle();
         }
-        // 키 이벤트 처리
+        // 키 이벤트 처리 > 엔터로 검색
         function enter_search(event) {
             let key = event.key;
             if (key == 'Enter') {
@@ -329,6 +334,7 @@
             $.removeCookie('ref_token', { path: '/' })
             window.location.reload()
         }
+        //더보기 버튼 (30개씩 카드를 추가로 불러옴)
         function more_btn(){
             let cnt = document.getElementsByClassName('card-body').length
             if (cnt == search_data.length){ return } // 클래스네임 card-body의 갯수와 검색데이터의 숫자가 같다면 모두 검색 되었으므로, 더 이상 진행할 필요가 없습니다. return은 메소드를 종료시킵니다.
