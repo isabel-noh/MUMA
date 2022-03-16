@@ -24,55 +24,88 @@ def login():
     return render_template('login.html')
 
     #   필터 기능
+    
 @app.route("/muse_select", methods=["GET"])
-def mnt_select():
+def muse_select():
     doc = []  # 검색을 마친 자료가 들어갈 배열입니다.
-    builder_receive = request.args.get("builder_give")
+
     type_receive = request.args.get("type_give")
     area_receive = request.args.get("area_give")
 
-    museums = list(db.muse_info.find({}, {'_id': False}))  # 박물관의 전체 목록을 museums 변수로 받아옵니다.
-    if builder_receive == '국공립':
+    #1
+    if type_receive == '타입전체' and area_receive == '지역전체':
+        museums = list(db.muse_info.find({}, {'_id': False}))
         for museum in museums:
-            if museum["type"] == '국립' or museum["type"] == '공립':
-                if type_receive == '박물관전체':
-                    if area_receive == '지역전체':
-                        doc.append(museum)
-                    elif area_receive in museum['addr']:
-                        doc.append(museum)
-                elif type_receive in museum['name']:
-                    if area_receive == '지역전체':
-                        doc.append(museum)
-                    elif area_receive in museum['addr']:
-                        doc.append(museum)
-    elif builder_receive == '타입전체':
-        for museum in museums:
-            if type_receive == '박물관전체':
-                if area_receive == '지역전체':
-                    doc.append(museum)
-                elif area_receive in museum['addr']:
-                    doc.append(museum)
-            elif type_receive in museum['name']:
-                if area_receive == '지역전체':
-                    doc.append(museum)
-                elif area_receive in museum['addr']:
+            doc.append(museum)
+
+    #2
+    museums = list(db.muse_info.find({}, {'_id': False}))
+    if type_receive == '타입전체':
+            for museum in museums:
+                if area_receive in museum['addr']:
                     doc.append(museum)
 
-    else:
+    #3
+    if type_receive != '타입전체' and area_receive == '지역전체':
+        museums = list(db.muse_info.find({'type': type_receive}, {'_id': False}))
         for museum in museums:
-            if builder_receive in museum["type"]:
-                if type_receive == '박물관전체':  # str.contains('박물관')
-                    if area_receive == '지역전체':
-                        doc.append(museum)
-                    elif area_receive in museum['addr']:
-                        doc.append(museum)
-                elif type_receive in museum['name']:
-                    if area_receive == '지역전체':
-                        doc.append(museum)
-                    elif area_receive in museum['addr']:
-                        doc.append(museum)
+            doc.append(museum)
 
-    return jsonify({'search_list': doc, 'msg': '검색완료!'})
+    #4
+    if type_receive != '타입전체' and area_receive != '지역전체':
+        museums = list(db.muse_info.find({'type': type_receive}, {'_id': False}))
+        for museum in museums:
+            if area_receive in museum['addr']:
+                doc.append(museum)  
+# @app.route("/muse_select", methods=["GET"])
+# def mnt_select():
+#     doc = []  # 검색을 마친 자료가 들어갈 배열입니다.
+#     builder_receive = request.args.get("builder_give")
+#     type_receive = request.args.get("type_give")
+#     area_receive = request.args.get("area_give")
+
+#     museums = list(db.muse_info.find({}, {'_id': False}))  # 박물관의 전체 목록을 museums 변수로 받아옵니다.
+#     if builder_receive == '국공립':
+#         for museum in museums:
+#             if museum["type"] == '국립' or museum["type"] == '공립':
+#                 if type_receive == '박물관전체':
+#                     if area_receive == '지역전체':
+#                         doc.append(museum)
+#                     elif area_receive in museum['addr']:
+#                         doc.append(museum)
+#                 elif type_receive in museum['name']:
+#                     if area_receive == '지역전체':
+#                         doc.append(museum)
+#                     elif area_receive in museum['addr']:
+#                         doc.append(museum)
+#     elif builder_receive == '타입전체':
+#         for museum in museums:
+#             if type_receive == '박물관전체':
+#                 if area_receive == '지역전체':
+#                     doc.append(museum)
+#                 elif area_receive in museum['addr']:
+#                     doc.append(museum)
+#             elif type_receive in museum['name']:
+#                 if area_receive == '지역전체':
+#                     doc.append(museum)
+#                 elif area_receive in museum['addr']:
+#                     doc.append(museum)
+
+#     else:
+#         for museum in museums:
+#             if builder_receive in museum["type"]:
+#                 if type_receive == '박물관전체':  # str.contains('박물관')
+#                     if area_receive == '지역전체':
+#                         doc.append(museum)
+#                     elif area_receive in museum['addr']:
+#                         doc.append(museum)
+#                 elif type_receive in museum['name']:
+#                     if area_receive == '지역전체':
+#                         doc.append(museum)
+#                     elif area_receive in museum['addr']:
+#                         doc.append(museum)
+
+     return jsonify({'search_list': doc, 'msg': '검색완료!'})
 
 # detailpg.html로 연결하면서 index 데이터를 전송
 @app.route('/detail_pg', methods=["GET"])
