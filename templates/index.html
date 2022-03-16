@@ -157,13 +157,16 @@
     }
     function filtering(){
         $('#myCards').empty()
-        let muse_builder = $('#muse_type').val()
-        let muse_type = $('#muse_art').val()
-        let muse_area = $('#muse_area').val()
+//         let muse_builder = $('#muse_type').val()
+//         let muse_type = $('#muse_art').val()
+//         let muse_area = $('#muse_area').val()
+           let muse_type = $('#muse_type').val()
+           let muse_area = $('#muse_area').val()
 
         $.ajax({
             type: 'GET',
-            url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
+            url: '/muse_select?t&type_give='+muse_type+'&area_give='+muse_area,
+            // url: '/muse_select?&builder_give='+muse_builder+'&type_give='+muse_type+'&area_give='+muse_area,
             data: {},
             success: function (response) {
             let rows = response['search_list']
@@ -225,20 +228,20 @@
                 <option value="사립">사립</option>
                 <option value="대학">대학</option>
             </select>
-            <select class="form-select" id="muse_art" aria-label="Default select example">
+<!--             <select class="form-select" id="muse_art" aria-label="Default select example">
                 <option value="박물관전체" selected>미술관/박물관(전체)</option>
                 <option value="미술관">미술관</option>
                 <option value="박물관">박물관</option>
-            </select>
+            </select> -->
             <select class="form-select" id="muse_area" aria-label="Example select with button addon">
                 <option value="지역전체" selected>지역(전체)</option>
-                <option value="서울">서울특별시</option>
-                <option value="부산">부산광역시</option>
-                <option value="대구">대구광역시</option>
-                <option value="인천">인천광역시</option>
-                <option value="광주">광주광역시</option>
-                <option value="대전">대전광역시</option>
-                <option value="울산">울산광역시</option>
+                <option value="서울특별시">서울특별시</option>
+                <option value="부산광역시">부산광역시</option>
+                <option value="대구광역시">대구광역시</option>
+                <option value="인천광역시">인천광역시</option>
+                <option value="광주광역시">광주광역시</option>
+                <option value="대전광역시">대전광역시</option>
+                <option value="울산광역시">울산광역시</option>
                 <option value="경기도">경기도</option>
                 <option value="강원도">강원도</option>
                 <option value="충청북도">충청북도</option>
